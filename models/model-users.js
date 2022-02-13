@@ -1,11 +1,11 @@
 const db = require("../config/database.js").db;
-const transporter = require("../config/database.js").transporter;
+const transporter = require("../config/transporter.js").transporter;
 const url = require("../config/path.js").url;
-const path = require("../config/path.js").path;
+const path = require("../config/path.js").path.backend;
 const fs = require("fs");
 
 const textError = (err) => {
-    return `Произошла внутренняя ошибка сервера. Пожалуйста, свяжитесь с администратором сайта (dosportsproject@gmail.com) с указанием текста ошибки:\n${err}`
+    return `Произошла внутренняя ошибка сервера. Пожалуйста, напишите службе поддержки пользователей (support@dosports.ru), укажите обстоятельства возникшей ошибки, а также следующий текст ошибки:\n${err}`
 }
 
 const getUsers = (res) => {
@@ -19,7 +19,7 @@ const getUsers = (res) => {
 }
 
 const countLogin = (login, res) => {
-    db.query(`SELECT COUNT(login) FROM users WHERE login = '${login}'`, (err, data) => {
+    db.query(`SELECT COUNT(login) AS count FROM users WHERE login = '${login}'`, (err, data) => {
         if (err) {
             res(textError(err), null);
         } else {
@@ -29,7 +29,7 @@ const countLogin = (login, res) => {
 }
 
 const countEmail = (email, res) => {
-    db.query(`SELECT COUNT(email) FROM users WHERE email = '${email}'`, (err, data) => {
+    db.query(`SELECT COUNT(email) AS count FROM users WHERE email = '${email}'`, (err, data) => {
         if (err) {
             res(textError(err), null);
         } else {
@@ -39,37 +39,32 @@ const countEmail = (email, res) => {
 }
 
 const addUser = (newUser, res) => {
-    let filePath = `${path}/DoSports-backend/config/users/${newUser.code}.txt`;
+    let filePath = `${path}/config/users/${newUser.code}.txt`;
     let fileContent = JSON.stringify(newUser);
-    fs.open(filePath, 'w', (err) => {
+    fs.writeFile(filePath, fileContent, (err) => {
         if (err) {
             res(textError(err), null);
         } else {
-            fs.writeFile(filePath, fileContent, (err) => {
+            let message = {
+                from: 'DoSports <no-reply@dosports.ru>',
+                to: newUser.email,
+                subject: 'Подтверждение учетной записи DoSports',
+                text: `Для активации учетной записи перейдите по ссылке: ${url}/api/users/activate/${newUser.code}`,
+                html: `Для активации учетной записи перейдите <a href="${url}/api/users/activate/${newUser.code}">по ссылке</a>`,
+            }
+            res(null, 'На вашу электронную почту отправлено письмо. Перейдите по ссылке из письма, чтобы активировать учетную запись.\nНе пришло сообщение? Проверьте папку "Спам"');
+            transporter.sendMail(message, (err, data) => {
                 if (err) {
                     res(textError(err), null);
-                } else {
-                    res(null, 'На вашу электронную почту отправлено письмо. Перейдите по ссылке из письма, чтобы активировать учетную запись.\nНе пришло сообщение? Проверьте папку "Спам"');
-                    // transporter.sendMail({
-                    //     from: 'DoSports <dosports.master@gmail.com>',
-                    //     to: newUser.email,
-                    //     subject: 'Подтверждение учетной записи DoSports',
-                    //     text: `Для активации учетной записи перейдите по ссылке: ${url}/api/users/activate/${newUser.code}`,
-                    //     html: `Для активации учетной записи перейдите <a href="${url}/api/users/activate/${newUser.code}">по ссылке</a>`,
-                    // }).then(() => {
-                    //     res(null, 'На вашу электронную почту отправлено письмо. Перейдите по ссылке из письма, чтобы активировать учетную запись.\nНе пришло сообщение? Проверьте папку "Спам"');
-                    // }).catch((err) => {
-                    //     res(textError(err), null);
-                    // });
                 }
-            })
+            });
         }
     });
     
 }
 
 const activateUser = (code, res) => {
-    let filePath = `${path}/DoSports-backend/config/users/${code}.txt`;
+    let filePath = `${path}/config/users/${code}.txt`;
     fs.readFile(filePath, "utf8", (err, data) => {
             if(err) {
                 res(`Такой код не найден`, null);
@@ -101,19 +96,19 @@ const activateUser = (code, res) => {
     });
 }
 
-const sendMail = (message) => {
-    let message = {
-        from: 'DoSports <dosports.master@gmail.com>',
-        to: "toxa19921810@gmail.com",
-        subject: 'Подтверждение учетной записи DoSports',
-        text: `Для активации учетной записи перейдите по ссылке:`,
-        html: `Для активации учетной записи перейдите`,
-    }
+const sendMail = (email, res) => {
+    message = {
+        from: 'no-reply@dosports.ru',
+        to: email,
+        subject: 'Проверка письма',
+        text: `Сообщение пришло! Ура!`,
+        html: `Сообщение пришло! <a href="https://dosports.ru/">Ура!</a>`,
+    };
     transporter.sendMail(message, (err, data) => {
         if (err) {
             res(textError(err), null);
         } else {
-            res(null, 'На вашу электронную почту отправлено письмо. Перейдите по ссылке из письма, чтобы активировать учетную запись.\nНе пришло сообщение? Проверьте папку "Спам"');
+            res(null, 'На вашу электронную почту отправлено письмо.');
         }
     });
 }
@@ -123,3 +118,4 @@ module.exports.countLogin = countLogin;
 module.exports.countEmail = countEmail;
 module.exports.addUser = addUser;
 module.exports.activateUser = activateUser;
+module.exports.sendMail = sendMail;

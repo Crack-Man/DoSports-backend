@@ -15,22 +15,56 @@ const showUsers = (req, res) => {
 }
 
 const loginIsUnique = (req, res) => {
-    return res.send(!models.users.countLogin(req));
+    let login = req.params.login;
+    models.users.countLogin(login, (err, data) => {
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(!data[0]["count"]);
+        }
+    });
 }
 
 const emailIsUnique = (req, res) => {
-    return res.send(!models.users.countEmail(req));
+    let email = req.params.email;
+    models.users.countEmail(email, (err, data) => {
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(!data[0]["count"]);
+        }
+    });
 }
 
 const createUser = (req, res) => {
     let newUser = req.body;
-    newUser.password = bcrypt.hashSync(newUser.password, 10);
-    newUser.code = bcrypt.hashSync(newUser.email, 10);
-    models.users.addUser(newUser, (err, data) => {
+    models.users.countEmail(newUser.email, (err, data) => {
         if (err) {
             res.send(err);
         } else {
-            res.send(data);
+            if (!data[0]["count"]) {
+                models.users.countLogin(newUser.login, (err, data) => {
+                    if (err) {
+                        res.send(err);
+                    } else {
+                        if (!data[0]["count"]) {
+                            newUser.password = bcrypt.hashSync(newUser.password, 10);
+                            newUser.code = (bcrypt.hashSync(newUser.email, 10)).replaceAll("/", "a");
+                            models.users.addUser(newUser, (err, data) => {
+                                if (err) {
+                                    res.send(err);
+                                } else {
+                                    res.send(data);
+                                }
+                            })
+                        } else {
+                            res.send("Пользователь с данным логином уже существует")
+                        }
+                    }
+                })
+            } else {
+                res.send("Пользователь с данной электронной почтой уже существует")
+            }
         }
     })
 }
@@ -46,8 +80,20 @@ const confirmUser = (req, res) => {
     })
 }
 
+const testMail = (req, res) => {
+    let email = req.params.email;
+    models.users.sendMail(email, (err, data) => {
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(data);
+        }
+    })
+}
+
 module.exports.showUsers = showUsers;
 module.exports.loginIsUnique = loginIsUnique;
 module.exports.emailIsUnique = emailIsUnique;
 module.exports.createUser = createUser;
 module.exports.confirmUser = confirmUser;
+module.exports.testMail = testMail;
