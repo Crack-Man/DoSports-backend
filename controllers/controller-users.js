@@ -14,6 +14,26 @@ const showUsers = (req, res) => {
     });
 }
 
+const showLogins = (req, res) => {
+    models.users.getLogins((err, results) => {
+        if (err) {
+            res.send(err);
+        } else {
+            res.json(results);
+        }
+    });
+}
+
+const showEmails = (req, res) => {
+    models.users.getEmails((err, results) => {
+        if (err) {
+            res.send(err);
+        } else {
+            res.json(results);
+        }
+    });
+}
+
 const loginIsUnique = (req, res) => {
     let login = req.params.login;
     models.users.countLogin(login, (err, data) => {
@@ -92,6 +112,8 @@ const testMail = (req, res) => {
 }
 
 module.exports.showUsers = showUsers;
+module.exports.showLogins = showLogins;
+module.exports.showEmails = showEmails;
 module.exports.loginIsUnique = loginIsUnique;
 module.exports.emailIsUnique = emailIsUnique;
 module.exports.createUser = createUser;

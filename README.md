@@ -47,6 +47,16 @@ console.log(response.data) // true или false
 
 #### Пользователи
 
+* Получить список логинов
+    ```js;
+    let response = await axios.get(`https://dosports.ru/api/users/get-logins`);
+    console.log(response.data) // JSON логинов
+    ```
+* Получить список почтовых адресов
+    ```js;
+    let response = await axios.get(`https://dosports.ru/api/users/get-emails`);
+    console.log(response.data) // JSON почтовых адресов
+    ```
 * Проверить, является ли данный логин уникальным
     ```js
     let login = "Crack-Man";

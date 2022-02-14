@@ -9,6 +9,8 @@ const router = express.Router();
 
 // Пользователи
 router.get("/api/users/get-users", controllers.users.showUsers);
+router.get("/api/users/get-logins", controllers.users.showLogins);
+router.get("/api/users/get-emails", controllers.users.showEmails);
 router.get("/api/users/login-is-unique/:login", controllers.users.loginIsUnique);
 router.get("/api/users/email-is-unique/:email", controllers.users.emailIsUnique);
 router.post("/api/users/add-user", controllers.users.createUser);

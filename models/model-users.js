@@ -18,6 +18,26 @@ const getUsers = (res) => {
     });
 }
 
+const getLogins = (res) => {
+    db.query('SELECT login FROM users', (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const getEmails = (res) => {
+    db.query('SELECT email FROM users', (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
 const countLogin = (login, res) => {
     db.query(`SELECT COUNT(login) AS count FROM users WHERE login = '${login}'`, (err, data) => {
         if (err) {
@@ -114,6 +134,8 @@ const sendMail = (email, res) => {
 }
 
 module.exports.getUsers = getUsers;
+module.exports.getLogins = getLogins;
+module.exports.getEmails = getEmails;
 module.exports.countLogin = countLogin;
 module.exports.countEmail = countEmail;
 module.exports.addUser = addUser;
