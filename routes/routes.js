@@ -16,6 +16,10 @@ router.get("/api/users/email-is-unique/:email", controllers.users.emailIsUnique)
 router.post("/api/users/add-user", controllers.users.createUser);
 router.get("/api/users/activate/:code", controllers.users.confirmUser);
 router.get("/api/users/test-mail/:email", controllers.users.testMail);
+router.post("/api/users/auth", controllers.users.auth);
+router.post("/api/users/verify-token-access", controllers.users.verifyTokenAccess);
+router.post("/api/users/verify-token-refresh", controllers.users.verifyTokenRefresh);
+
 
 // Регионы
 router.get("/api/regions/get-regions", controllers.regions.showRegions);

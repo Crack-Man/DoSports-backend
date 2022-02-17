@@ -39,7 +39,7 @@ const getEmails = (res) => {
 }
 
 const countLogin = (login, res) => {
-    db.query(`SELECT COUNT(login) AS count FROM users WHERE login = '${login}'`, (err, data) => {
+    db.query(`SELECT COUNT(login) AS count FROM users WHERE login = ?`, [login], (err, data) => {
         if (err) {
             res(textError(err), null);
         } else {
@@ -49,7 +49,7 @@ const countLogin = (login, res) => {
 }
 
 const countEmail = (email, res) => {
-    db.query(`SELECT COUNT(email) AS count FROM users WHERE email = '${email}'`, (err, data) => {
+    db.query(`SELECT COUNT(email) AS count FROM users WHERE email = ?`, [email], (err, data) => {
         if (err) {
             res(textError(err), null);
         } else {
@@ -95,13 +95,15 @@ const activateUser = (code, res) => {
                         res(textError(err), null);
                     } else {
                         db.query(`INSERT INTO users SET
-                            login = '${newUser.login}',
-                            password = '${newUser.password}',
-                            email = '${newUser.email}',
-                            fullname = '${newUser.fullname}',
-                            birthday = '${newUser.birthday}',
-                            gender = '${newUser.gender}',
-                            id_region = ${newUser.id_region}`, (err, data) => {
+                            login = ?,
+                            password = ?,
+                            email = ?,
+                            fullname = ?,
+                            birthday = ?,
+                            gender = ?,
+                            id_region = ?`,
+                            [newUser.login, newUser.password, newUser.email,
+                            newUser.fullname, newUser.birthday, newUser.gender, newUser.id_region], (err, data) => {
                                 if(err) {
                                     res(textError(err), null);
                                 } else {
@@ -133,6 +135,26 @@ const sendMail = (email, res) => {
     });
 }
 
+const findUser = (user, res) => {
+    db.query(`SELECT id, password FROM users WHERE email = ? OR login = ?`, [user.login, user.login], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const getUser = (id, res) => {
+    db.query(`SELECT * FROM users WHERE id = ?`, [id], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
 module.exports.getUsers = getUsers;
 module.exports.getLogins = getLogins;
 module.exports.getEmails = getEmails;
@@ -141,3 +163,5 @@ module.exports.countEmail = countEmail;
 module.exports.addUser = addUser;
 module.exports.activateUser = activateUser;
 module.exports.sendMail = sendMail;
+module.exports.findUser = findUser;
+module.exports.getUser = getUser;
