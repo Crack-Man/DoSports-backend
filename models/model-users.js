@@ -1,5 +1,6 @@
 const db = require("../config/database.js").db;
 const transporter = require("../config/transporter.js").transporter;
+const author = require("../config/transporter.js").author;
 const url = require("../config/path.js").url;
 const path = require("../config/path.js").path.backend;
 const fs = require("fs");
@@ -65,19 +66,7 @@ const addUser = (newUser, res) => {
         if (err) {
             res(textError(err), null);
         } else {
-            let message = {
-                from: 'DoSports <no-reply@dosports.ru>',
-                to: newUser.email,
-                subject: 'Подтверждение учетной записи DoSports',
-                text: `Для активации учетной записи перейдите по ссылке: ${url}/api/users/activate/${newUser.code}`,
-                html: `Для активации учетной записи перейдите <a href="${url}/api/users/activate/${newUser.code}">по ссылке</a>`,
-            }
-            res(null, 'На вашу электронную почту отправлено письмо. Перейдите по ссылке из письма, чтобы активировать учетную запись.\nНе пришло сообщение? Проверьте папку "Спам"');
-            transporter.sendMail(message, (err, data) => {
-                if (err) {
-                    res(textError(err), null);
-                }
-            });
+            res(null, {name: "Success"});
         }
     });
     
@@ -107,7 +96,7 @@ const activateUser = (code, res) => {
                                 if(err) {
                                     res(textError(err), null);
                                 } else {
-                                    res("Пользователь успешно подтвержден");
+                                    res(null, "Пользователь успешно подтвержден");
                                 }
                             }
                         );
@@ -115,23 +104,6 @@ const activateUser = (code, res) => {
                 });
                 
             }
-    });
-}
-
-const sendMail = (email, res) => {
-    message = {
-        from: 'no-reply@dosports.ru',
-        to: email,
-        subject: 'Проверка письма',
-        text: `Сообщение пришло! Ура!`,
-        html: `Сообщение пришло! <a href="https://dosports.ru/">Ура!</a>`,
-    };
-    transporter.sendMail(message, (err, data) => {
-        if (err) {
-            res(textError(err), null);
-        } else {
-            res(null, 'На вашу электронную почту отправлено письмо.');
-        }
     });
 }
 
@@ -155,6 +127,86 @@ const getUser = (id, res) => {
     });
 }
 
+const generateRestoreCode = (len) => {
+    let code = "";
+    for (let i = 0; i < len; i++) {
+        code += Math.floor(Math.random() * 10);
+    }
+    return code;
+}
+
+const addRestoreCode = (options, res) => {
+    let filePath = `${path}/config/restore_password_codes/${options.email}.txt`;
+    fs.writeFile(filePath, options.code, (err) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, {name: "Success"});
+        }
+    });
+}
+
+const getRestoreCode = (email, res) => {
+    let filePath = `${path}/config/restore_password_codes/${email}.txt`;
+    fs.readFile(filePath, (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, {name: "Success", code: data});
+        }
+    });
+}
+
+const sendMail = (options, res) => {
+    message = {
+        from: author,
+        to: options.email,
+        subject: options.subject,
+        text: options.text,
+        html: options.textHTML,
+    };
+    
+    transporter.sendMail(message, (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, {name: "Success"});
+        }
+    });
+}
+
+const findRestoreCode = (user, res) => {
+    let filePath = `${path}/config/restore_password_codes/${user.email}.txt`;
+    fs.readFile(filePath, "utf8", (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            if (data === user.code.toString()) {
+                res(null, true);
+            } else {
+                res(null, false);
+            }
+        }
+    });
+}
+
+const updatePassword = (input, res) => {
+    db.query("UPDATE users SET password = ? WHERE email = ?", [input.password, input.email], (err, data) =>{
+        if (err) {
+            res(textError(err), null);
+        } else {
+            let filePath = `${path}/config/restore_password_codes/${input.email}.txt`;
+            fs.unlink(filePath, (err, data) => {
+                if (err) {
+                    res(textError(err), null);
+                } else {
+                    res(null, {name: "Success"})
+                }
+            })
+        }
+    })
+}
+
 module.exports.getUsers = getUsers;
 module.exports.getLogins = getLogins;
 module.exports.getEmails = getEmails;
@@ -162,6 +214,11 @@ module.exports.countLogin = countLogin;
 module.exports.countEmail = countEmail;
 module.exports.addUser = addUser;
 module.exports.activateUser = activateUser;
-module.exports.sendMail = sendMail;
 module.exports.findUser = findUser;
 module.exports.getUser = getUser;
+module.exports.generateRestoreCode = generateRestoreCode;
+module.exports.addRestoreCode = addRestoreCode;
+module.exports.getRestoreCode = getRestoreCode;
+module.exports.sendMail = sendMail;
+module.exports.findRestoreCode = findRestoreCode;
+module.exports.updatePassword = updatePassword;

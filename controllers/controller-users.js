@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const signature = require('../config/signature.js');
+const url = require("../config/path.js").url;
 
 const models = {
     users: require("../models/model-users.js"),
@@ -77,7 +78,19 @@ const createUser = (req, res) => {
                                 if (err) {
                                     res.send(err);
                                 } else {
-                                    res.send(data);
+                                    let options = {
+                                        email: newUser.email,
+                                        subject: 'Подтверждение учетной записи DoSports',
+                                        text: `Для активации учетной записи перейдите по ссылке: ${url}/api/users/activate/${newUser.code}`,
+                                        textHTML: `Для активации учетной записи перейдите <a href="${url}/api/users/activate/${newUser.code}">по ссылке</a>`,
+                                    };
+                                    models.users.sendMail(options, (err, data) => {
+                                        if (err) {
+                                            res.json({name: "Error", text: err});
+                                        } else {
+                                            res.json({name: "Success", text: 'На вашу электронную почту отправлено письмо. Перейдите по ссылке из письма, чтобы активировать учетную запись.\nНе пришло сообщение? Проверьте папку "Спам"'})
+                                        }
+                                    })
                                 }
                             })
                         } else {
@@ -103,17 +116,6 @@ const confirmUser = (req, res) => {
     })
 }
 
-const testMail = (req, res) => {
-    let email = req.params.email;
-    models.users.sendMail(email, (err, data) => {
-        if (err) {
-            res.send(err);
-        } else {
-            res.send(data);
-        }
-    })
-}
-
 const auth = (req, res) => {
     let user = req.body;
     models.users.findUser(user, (err, data) => {
@@ -122,12 +124,12 @@ const auth = (req, res) => {
         } else if (data.length) {
             let userAuth = data[0];
             if (bcrypt.compareSync(user.password, userAuth["password"])) {
-                res.send({message: "", token: generateToken(userAuth["id"])});
+                res.json({message: "", token: generateToken(userAuth["id"])});
             } else {
-                res.send({message: "Неверный пароль"});
+                res.json({message: "Неверный пароль"});
             }
         } else {
-            res.send({message: "Пользователь не найден"});
+            res.json({message: "Пользователь не найден"});
         }
     })
 }
@@ -187,6 +189,97 @@ const verifyTokenRefresh = (req, res) => {
     });
 }
 
+const sendCodeRestore = (req, res) => {
+    let email = req.body.email;
+    models.users.countEmail(email, (err, data) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            if (data[0]["count"]) {
+                let code = models.users.generateRestoreCode(5);
+                let options = {
+                    email: email,
+                    code: code
+                }
+                models.users.addRestoreCode(options, (err, data) => {
+                    if (err) {
+                        res.send({name: "Error", text: err});
+                    } else {
+                        options.subject = "Восстановление пароля";
+                        options.text = `Код подтверждения: ${code}`;
+                        options.textHTML = options.text;
+                        models.users.sendMail(options, (err, data) => {
+                            if (err) {
+                                res.json({name: "Error", text: err});
+                            } else {
+                                res.json({name: "Success", text: `Введите код, который пришел вам на почту ${options.email}`});
+                            }
+                        })
+                    }
+                })
+                
+            } else {
+                res.json({name: "Error", text: "Пользователь не найден"})
+            }
+        }
+    });
+}
+
+const resendCodeRestore = (req, res) => {
+    let email = req.body.email;
+    models.users.getRestoreCode(email, (err, data) => {
+        if (err) {
+            res.send({name: "Error", text: err});
+        } else {
+            let options = {
+                email: email,
+                subject: "Восстановление пароля",
+                text: `Код подтверждения: ${data.code}`,
+                textHTML: `Код подтверждения: ${data.code}`,
+            }
+            
+            models.users.sendMail(options, (err, data) => {
+                if (err) {
+                    res.json({name: "Error", text: err});
+                } else {
+                    res.json({name: "Success", text: `Введите код, который пришел вам на почту ${options.email}`});
+                }
+            })
+        }
+    })
+}
+
+const compareCodeRestore = (req, res) => {
+    let user = req.body;
+    models.users.findRestoreCode(user, (err, data) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json({name: "Success", text: "", match: data});
+        }
+    })
+}
+
+const changePassword = (req, res) => {
+    let user = req.body;
+    models.users.findRestoreCode(user, (err, data) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            if (data) {
+                user.password = bcrypt.hashSync(user.password, 10);
+                models.users.updatePassword(user, (err, data) => {
+                    if (err) {
+                        res.json({name: "Error", text: err});
+                    } else {
+                        res.json({name: "Success", text: "Пароль успешно изменен"})
+                    }
+                })
+            }
+        }
+    })
+}
+
 module.exports.showUsers = showUsers;
 module.exports.showLogins = showLogins;
 module.exports.showEmails = showEmails;
@@ -194,7 +287,10 @@ module.exports.loginIsUnique = loginIsUnique;
 module.exports.emailIsUnique = emailIsUnique;
 module.exports.createUser = createUser;
 module.exports.confirmUser = confirmUser;
-module.exports.testMail = testMail;
 module.exports.auth = auth;
 module.exports.verifyTokenAccess = verifyTokenAccess;
 module.exports.verifyTokenRefresh = verifyTokenRefresh;
+module.exports.sendCodeRestore = sendCodeRestore;
+module.exports.resendCodeRestore = resendCodeRestore;
+module.exports.compareCodeRestore = compareCodeRestore;
+module.exports.changePassword = changePassword;

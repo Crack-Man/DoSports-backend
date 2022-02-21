@@ -95,9 +95,17 @@ let newUser = {
 let response = await axios.post(`https://dosports.ru/api/users/add-user`, newUser);
 console.log(response.data); // сообщение об успешной регистрации или наличии какой-либо ошибки
 ```
+response.data представляет собой JSON следующего вида:
 
-После выполнения запроса происходит проверка логина и почты на уникальность, генерируется код активации, хешируется
-пароль.
+```js
+let data = {
+    name: "Success" // или "Error"
+    text: "" // текст ошибки или сообщение об успешной регистрации
+}
+```
+
+После выполнения запроса происходит проверка логина и почты на уникальность, хешируется
+пароль, генерируется код активации и отсылается пользователю.
 
 ##### 6. Активировать пользователя
 
@@ -107,15 +115,7 @@ let response = await axios.get(`https://dosports.ru/api/users/activate/${code}`)
 console.log(response.data); // сообщение о том, что пользователь успешно активирован, или данный код не найден
 ```
 
-##### 7. Отправить тестовое сообщение на указанный E-MAIL
-
-```js
-let email = "example@gmail.com";
-let response = await axios.get(`https://dosports.ru/api/users/test-mail/${email}`);
-console.log(response.data); // сообщение о том, что сообщение успешно отправлено, или произошла какая-то ошибка
-```
-
-##### 8. Авторизация пользователя
+##### 7. Авторизация пользователя
 
 ```js
 let user = {
@@ -139,7 +139,7 @@ let data = {
 ```
 Токены должны находиться в локальном хранилище
 
-##### 9. Проверка TOKEN ACCESS
+##### 8. Проверка TOKEN ACCESS
 
 ```js
 let tokenAccess = "saxdjkdjkl$#3.213dfasf.1234rf";
@@ -160,13 +160,13 @@ let data = {
 }
 ```
 
-##### 10. Проверка TOKEN REFRESH
+##### 9. Проверка TOKEN REFRESH
 
 ```js
 let tokenRefresh = "saxdjkdjkl$#3.213dfasf.1234rf";
 
 let response = await axios.post(`https://dosports.ru/api/users/verify-token-access`, tokenAccess);
-console.log(response.data)''
+console.log(response.data)
 ```
 
 response.data представляет собой JSON следующего вида:
@@ -185,7 +185,76 @@ let data = {
 }
 ```
 
+##### 10. Восстановление пароля: отправить код подтверждения
+
+```js
+let data = {
+    email: "example@gmail.com"
+}
+
+let response = await axios.post(`https://dosports.ru/api/users/resend-code`, data);
+console.log(response.data)
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success" // или "Error"
+    text: "" // текст ошибки, если name === "Error", либо сообщение о необходимости ввести код, который придёт на почту
+}
+```
+
+После выполнения запроса генерируется 5-значный код и отсылается на почту. Почта должна встречаться в базе данных, иначе система говорит, что пользователь не найден.
+
 ___
+
+##### 11. Восстановление пароля: переотправить код подтверждения
+
+Происходит то же самое, что и в предыдущем пункте, но код не генерируется заново.
+
+##### 12. Восстановление пароля: проверить код подтверждения
+
+```js
+let data = {
+    email: "example@gmail.com",
+    code: 12345
+}
+
+let response = await axios.post(`https://dosports.ru/api/users/compare-code`, data);
+console.log(response.data)
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success" // или "Error"
+    text: "" // текст ошибки, если name === "Error"
+}
+```
+
+##### 13. Восстановление пароля: проверить код подтверждения
+
+```js
+let data = {
+    email: "example@gmail.com",
+    password: "1234567"
+    code: 12345,
+}
+
+let response = await axios.post(`https://dosports.ru/api/users/compare-code`, data);
+console.log(response.data)
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success" // или "Error"
+    text: "" // текст ошибки, если name === "Error", либо сообщение об успешном восстановлении пароля
+}
+```
 
 #### Регионы
 
