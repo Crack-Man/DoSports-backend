@@ -60,7 +60,7 @@ const countEmail = (email, res) => {
 }
 
 const addUser = (newUser, res) => {
-    let filePath = `${path}/config/users/${newUser.code}.txt`;
+    let filePath = `${path}/config/users/${newUser.email}.txt`;
     let fileContent = JSON.stringify(newUser);
     fs.writeFile(filePath, fileContent, (err) => {
         if (err) {
@@ -69,40 +69,53 @@ const addUser = (newUser, res) => {
             res(null, {name: "Success"});
         }
     });
-    
 }
 
-const activateUser = (code, res) => {
-    let filePath = `${path}/config/users/${code}.txt`;
+const getActivateCode = (user, res) => {
+    let filePath = `${path}/config/users/${user.email}.txt`;
+    fs.readFile(filePath, (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, JSON.parse(data).code);
+        }
+    })
+}
+
+const activateUser = (user, res) => {
+    let filePath = `${path}/config/users/${user.email}.txt`;
     fs.readFile(filePath, "utf8", (err, data) => {
             if(err) {
                 res(`Такой код не найден`, null);
             } else {
                 newUser = JSON.parse(data);
-                fs.unlink(filePath, (err) => {
-                    if(err) {
-                        res(textError(err), null);
-                    } else {
-                        db.query(`INSERT INTO users SET
-                            login = ?,
-                            password = ?,
-                            email = ?,
-                            fullname = ?,
-                            birthday = ?,
-                            gender = ?,
-                            id_region = ?`,
-                            [newUser.login, newUser.password, newUser.email,
-                            newUser.fullname, newUser.birthday, newUser.gender, newUser.id_region], (err, data) => {
-                                if(err) {
-                                    res(textError(err), null);
-                                } else {
-                                    res(null, "Пользователь успешно подтвержден");
+                if (newUser.code === user.code) {
+                    fs.unlink(filePath, (err) => {
+                        if(err) {
+                            res(textError(err), null);
+                        } else {
+                            db.query(`INSERT INTO users SET
+                                login = ?,
+                                password = ?,
+                                email = ?,
+                                fullname = ?,
+                                birthday = ?,
+                                gender = ?,
+                                id_region = ?`,
+                                [newUser.login, newUser.password, newUser.email,
+                                newUser.fullname, newUser.birthday, newUser.gender, newUser.id_region], (err, data) => {
+                                    if(err) {
+                                        res(textError(err), null);
+                                    } else {
+                                        res(null, "Пользователь успешно подтвержден");
+                                    }
                                 }
-                            }
-                        );
-                    }
-                });
-                
+                            );
+                        }
+                    });
+                } else {
+                    res(`Такой код не найден`, null);
+                }
             }
     });
 }
@@ -213,6 +226,7 @@ module.exports.getEmails = getEmails;
 module.exports.countLogin = countLogin;
 module.exports.countEmail = countEmail;
 module.exports.addUser = addUser;
+module.exports.getActivateCode = getActivateCode;
 module.exports.activateUser = activateUser;
 module.exports.findUser = findUser;
 module.exports.getUser = getUser;

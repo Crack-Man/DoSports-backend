@@ -73,7 +73,7 @@ const createUser = (req, res) => {
                     } else {
                         if (!data[0]["count"]) {
                             newUser.password = bcrypt.hashSync(newUser.password, 10);
-                            newUser.code = (bcrypt.hashSync(newUser.email, 10)).replaceAll("/", "a");
+                            newUser.code = bcrypt.hashSync(newUser.email, 10).replaceAll("/", "a");
                             models.users.addUser(newUser, (err, data) => {
                                 if (err) {
                                     res.send(err);
@@ -81,14 +81,14 @@ const createUser = (req, res) => {
                                     let options = {
                                         email: newUser.email,
                                         subject: 'Подтверждение учетной записи DoSports',
-                                        text: `Для активации учетной записи перейдите по ссылке: ${url}/api/users/activate/${newUser.code}`,
-                                        textHTML: `Для активации учетной записи перейдите <a href="${url}/api/users/activate/${newUser.code}">по ссылке</a>`,
+                                        text: `Для активации учетной записи перейдите по ссылке: ${url}/api/users/activate/${newUser.email}:${newUser.code}`,
+                                        textHTML: `Для активации учетной записи перейдите <a href="${url}/api/users/activate/${newUser.email}:${newUser.code}">по ссылке</a>`,
                                     };
                                     models.users.sendMail(options, (err, data) => {
                                         if (err) {
                                             res.json({name: "Error", text: err});
                                         } else {
-                                            res.json({name: "Success", text: 'На вашу электронную почту отправлено письмо. Перейдите по ссылке из письма, чтобы активировать учетную запись.\nНе пришло сообщение? Проверьте папку "Спам"'})
+                                            res.json({name: "Success", text: `Чтобы завершить регистрацию, перейдите по ссылке из письма, которое мы отправили на ${newUser.email}`})
                                         }
                                     })
                                 }
@@ -105,9 +105,36 @@ const createUser = (req, res) => {
     })
 }
 
+const resendCodeActivate = (req, res) => {
+    let user = req.body;
+    models.users.getActivateCode(user, (err, code) => {
+        if (err) {
+            res.send(err);
+        } else {
+            let options = {
+                email: user.email,
+                subject: 'Подтверждение учетной записи DoSports',
+                text: `Для активации учетной записи перейдите по ссылке: ${url}/api/users/activate/${user.email}:${code}`,
+                textHTML: `Для активации учетной записи перейдите <a href="${url}/api/users/activate/${user.email}:${code}">по ссылке</a>`,
+            };
+            models.users.sendMail(options, (err, data) => {
+                if (err) {
+                    res.json({name: "Error", text: err});
+                } else {
+                    res.json({name: "Success", text: `Чтобы завершить регистрацию, перейдите по ссылке из письма, которое мы отправили на ${user.email}`})
+                }
+            })
+        }
+    })
+}
+
 const confirmUser = (req, res) => {
-    let code = req.params.code;
-    models.users.activateUser(code, (err, data) => {
+    let input = req.params.user.split(":");
+    let user = {
+        email: input[0],
+        code: input[1]
+    };
+    models.users.activateUser(user, (err, data) => {
         if (err) {
             res.send(err);
         } else {
@@ -286,6 +313,7 @@ module.exports.showEmails = showEmails;
 module.exports.loginIsUnique = loginIsUnique;
 module.exports.emailIsUnique = emailIsUnique;
 module.exports.createUser = createUser;
+module.exports.resendCodeActivate = resendCodeActivate;
 module.exports.confirmUser = confirmUser;
 module.exports.auth = auth;
 module.exports.verifyTokenAccess = verifyTokenAccess;
