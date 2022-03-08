@@ -91,35 +91,55 @@ let newUser = {
     login: "Crack_Man", // латинские символы, цифры, знак подчеркивания, точка, максимальное количество символов: 20
     password: "1234567", // не должны встречаться знаки ', " и `, минимальное количество символов: 7
 }
-  
+
 let response = await axios.post(`https://dosports.ru/api/users/add-user`, newUser);
 console.log(response.data);
 ```
+
 response.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
-    name: "Success" // или "Error"
+    name: "Success", // или "Error"
     text: "" // текст ошибки или сообщение об успешной регистрации
 }
 ```
 
-После выполнения запроса происходит проверка логина и почты на уникальность, хешируется
-пароль, генерируется код активации и отсылается пользователю.
+После выполнения запроса происходит проверка логина и почты на уникальность, хешируется пароль, генерируется код
+активации и отсылается пользователю.
 
-##### 6. Переотправить код подтверждения регистрации
+##### 6. Добавить пользователя (без подтверждения аккаунта и отправки письма)
+
+newUser тот же самый, что в п. 5
+
+```js
+let response = await axios.post("/add-user-mobile", newUser);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+  name: "Success", // или "Error"
+  text: "", // текст ошибки, если name === "Error"
+  token: {access: "...", refresh: "..."} // если name === "Success"
+}
+```
+
+##### 7. Переотправить код подтверждения регистрации
 
 ```js
 let newUser = {
     email: "example@gmail.com", // латинские символы или цифры, без пробелов
 }
-  
+
 let response = await axios.post(`https://dosports.ru/api/users/activate/resend-code`, newUser);
 console.log(response.data);
 ```
+
 Происходит то же самое, что и в предыдущем пункте, но код не генерируется заново.
 
-##### 7. Активировать пользователя
+##### 8. Активировать пользователя
 
 ```js
 let code = "$asdl$23414zfjSxc";
@@ -127,11 +147,11 @@ let response = await axios.get(`https://dosports.ru/api/users/activate/${code}`)
 console.log(response.data); // сообщение о том, что пользователь успешно активирован, или данный код не найден
 ```
 
-##### 8. Авторизация пользователя
+##### 9. Авторизация пользователя
 
 ```js
 let user = {
-    login: "Crack_Man" // также на этом месте может быть email
+    login: "Crack_Man", // также на этом месте может быть email
     password: "1234567"
 }
 let response = await axios.post(`https://dosports.ru/api/users/auth`, user);
@@ -142,37 +162,39 @@ response.data представляет собой JSON следующего ви
 
 ```js
 let data = {
-    message: "" // "Неверный пароль", "Пользователь не найден" или "", если авторизация прошла успешно
+    message: "", // "Неверный пароль", "Пользователь не найден" или "", если авторизация прошла успешно
     token: { // если авторизация успешная
         access: "saxdjkdjkl$#3.213dfasf.1234rf", // срок хранения - 30 минут, многоразовый
         refresh: "saxdjkdjkl$#3.213dfasf.1234rf" // срок хранения - 30 дней, одноразовый        
     }
 }
 ```
+
 Токены должны находиться в локальном хранилище
 
-##### 9. Проверка TOKEN ACCESS
+##### 10. Проверка TOKEN ACCESS
 
 ```js
 let tokenAccess = "saxdjkdjkl$#3.213dfasf.1234rf";
 
 let response = await axios.post(`https://dosports.ru/api/users/verify-token-access`, tokenAccess);
-console.log(response.data)''
+console.log(response.data)
+''
 ```
 
 response.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
-    name: "Success" // или "Error"
-    text: "" // текст ошибки, если name === "Error"
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
     user: { // информация о пользователе, если name === "Success"
         // ...
     }
 }
 ```
 
-##### 10. Проверка TOKEN REFRESH
+##### 11. Проверка TOKEN REFRESH
 
 ```js
 let tokenRefresh = "saxdjkdjkl$#3.213dfasf.1234rf";
@@ -185,19 +207,19 @@ response.data представляет собой JSON следующего ви
 
 ```js
 let data = {
-    name: "Success" // или "Error"
-    text: "" // текст ошибки, если name === "Error"
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
     token: { // если name === "Success" 
         access: "saxdjkdjkl$#3.213dfasf.1234rf", // срок хранения - 30 минут, многоразовый
         refresh: "saxdjkdjkl$#3.213dfasf.1234rf" // срок хранения - 30 дней, одноразовый        
-    }
+    },
     user: { // информация о пользователе, если name === "Success"
         // ...
     }
 }
 ```
 
-##### 11. Восстановление пароля: отправить код подтверждения
+##### 12. Восстановление пароля: отправить код подтверждения
 
 ```js
 let data = {
@@ -212,16 +234,17 @@ response.data представляет собой JSON следующего ви
 
 ```js
 let data = {
-    name: "Success" // или "Error"
+    name: "Success", // или "Error"
     text: "" // текст ошибки, если name === "Error", либо сообщение о необходимости ввести код, который придёт на почту
 }
 ```
 
-После выполнения запроса генерируется 5-значный код и отсылается на почту. Почта должна встречаться в базе данных, иначе система говорит, что пользователь не найден.
+После выполнения запроса генерируется 5-значный код и отсылается на почту. Почта должна встречаться в базе данных, иначе
+система говорит, что пользователь не найден.
 
 ___
 
-##### 12. Восстановление пароля: переотправить код подтверждения
+##### 13. Восстановление пароля: переотправить код подтверждения
 
 ```js
 let data = {
@@ -234,7 +257,7 @@ console.log(response.data)
 
 Происходит то же самое, что и в предыдущем пункте, но код не генерируется заново.
 
-##### 13. Восстановление пароля: проверить код подтверждения
+##### 14. Восстановление пароля: проверить код подтверждения
 
 ```js
 let data = {
@@ -250,12 +273,12 @@ response.data представляет собой JSON следующего ви
 
 ```js
 let data = {
-    name: "Success" // или "Error"
+    name: "Success", // или "Error"
     text: "" // текст ошибки, если name === "Error"
 }
 ```
 
-##### 14. Восстановление пароля: проверить код подтверждения
+##### 15. Восстановление пароля: изменить пароль
 
 ```js
 let data = {
@@ -272,8 +295,60 @@ response.data представляет собой JSON следующего ви
 
 ```js
 let data = {
-    name: "Success" // или "Error"
+    name: "Success", // или "Error"
     text: "" // текст ошибки, если name === "Error", либо сообщение об успешном восстановлении пароля
+}
+```
+
+##### 16. Войти с помощью VK
+
+Необходимо произвести редирект на данную страницу: https://dosports.ru/api/vk-auth, где пользователь выдает необходимые
+права. После данной процедуры происходит редирект на страницу https://dosports.ru/vk-reg.
+
+Чтобы прочесть данные VK пользователя, делается следующий запрос (запрос делать после выдачи пользователем прав на
+использование):
+
+```js
+let response = await axios.get(`https://dosports.ru/api/vk-auth/user`);
+console.log(response.data) // JSON VK данных о пользователя
+```
+
+Необходимые свойства объекта:
+
+```js
+let data = {
+    displayName: "Ivan Ivanov",
+    username: "crak_man",
+    gender: "male",
+    id: 14789124,
+    emails: [{value: "example@gmail.com"}]
+}
+```
+
+##### 17. Добавить пользователя VK
+
+```js
+let newUser = {
+    fullname: "Ivan Ivanov", // минимум два слова, кириллица, максимальное количество символов: 50
+    gender: "male", // или "female", или "f", "m" (сервер сам исправит)
+    birthday: '1999-10-18', // в формате YYYY-MM-DD
+    id_region: 1,
+    id_vk: 235782358,
+    email: "example@gmail.com", // латинские символы или цифры, без пробелов
+    login: "Crack_Man", // латинские символы, цифры, знак подчеркивания, точка, максимальное количество символов: 20
+}
+
+let response = await axios.post(`https://dosports.ru/api/vk-auth/add-user`, newUser);
+console.log(response.data);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+  name: "Success", // или "Error"
+  text: "", // текст ошибки, если name === "Error"
+  token: {access: "...", refresh: "..."} // если name === "Success"
 }
 ```
 
@@ -284,4 +359,20 @@ let data = {
 ```js
 let response = await axios.get(`https://dosports.ru/api/regions/get-regions`);
 console.log(response.data) // JSON регионов
+```
+
+#### Программы
+
+##### 1. Получить список образов жизни
+
+```js
+let response = await axios.get(`https://dosports.ru/api/programs/get-lifestyles`);
+console.log(response.data) // JSON образов жизни
+```
+
+##### 2. Получить список весовых категорий
+
+```js
+let response = await axios.get(`https://dosports.ru/api/programs/get-weight-categories`);
+console.log(response.data) // JSON весовых категорий
 ```
