@@ -29,19 +29,29 @@ passport.use(new VKontakteStrategy({
         }
 ));
     
-passport.serializeUser(function (user, done) {
-    return done(null, user);
+// passport.serializeUser(function (user, done) {
+//     return done(null, user);
+// });
+
+// passport.deserializeUser(function (id, done) {
+//     return done(null, id);
+// });
+
+passport.serializeUser(function(user, done) {
+   done(null, user);
 });
 
-passport.deserializeUser(function (id, done) {
-    return done(null, id);
+passport.deserializeUser(function(obj, done) {
+   done(null, obj);
 });
 
 router.get('/', passport.authenticate('vkontakte'));
 router.get('/callback', passport.authenticate('vkontakte', {
-    successRedirect: '/vk-reg',
+    successRedirect: '/api/vk-auth/user',
     failureRedirect: '/api/vk-auth'
 }));
+
+router.post("/decode-token-vk", controllers.vk.decodeTokenVk);
 
 router.get('/user', controllers.vk.showUser);
 

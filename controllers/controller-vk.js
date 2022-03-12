@@ -1,3 +1,6 @@
+const jwt = require('jsonwebtoken');
+const signature = require('../config/signature.js');
+
 const models = {
     users: require("../models/model-users.js"),
     vk: require("../models/model-vk.js"),
@@ -8,7 +11,31 @@ const controllers = {
 }
 
 const showUser = (req, res) => {
-    res.json(req.user);
+    let payload = {
+        id: req.user.id,
+        displayName: req.user.displayName,
+        username: req.user.username,
+        gender: req.user.gender,
+    };
+    if (req.user.emails) payload.email = req.user.emails[0].value;
+    let token = jwt.sign(payload, signature, { expiresIn: 600 });
+    res.send(
+        `<script>
+            localStorage.setItem('vk-token', '${token}');
+            window.location.replace("/vk-reg");
+        </script>`
+    );
+}
+
+const decodeTokenVk = (req, res) => {
+    let token = req.body.value;
+    jwt.verify(token, signature, (err, decoded) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json({name: "Success", user: decoded});
+        }
+    })
 }
 
 const createUserVk = (req, res) => {
@@ -57,5 +84,6 @@ const checkUserInDb = (req, res) => {
 }
 
 module.exports.showUser = showUser;
+module.exports.decodeTokenVk = decodeTokenVk;
 module.exports.createUserVk = createUserVk;
 module.exports.checkUserInDb = checkUserInDb;

@@ -143,7 +143,7 @@ const activateUser = (user, res) => {
 }
 
 const findUser = (user, res) => {
-    db.query(`SELECT id, password FROM users (WHERE email = ? OR login = ?) AND id_vk = 0`, [user.login, user.login], (err, data) => {
+    db.query(`SELECT id, password FROM users WHERE (email = ? OR login = ?) AND id_vk = 0`, [user.login, user.login], (err, data) => {
         if (err) {
             res(textError(err), null);
         } else {

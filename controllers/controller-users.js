@@ -2,7 +2,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const signature = require('../config/signature.js');
 const url = require("../config/path.js").url;
-const passport = require("passport");
 
 const models = {
     users: require("../models/model-users.js"),
@@ -192,10 +191,6 @@ const auth = (req, res) => {
     })
 }
 
-const authVK = (req, res) => {
-    
-}
-
 const generateToken = (id) => {
     let payload = {
         id: id
@@ -207,7 +202,7 @@ const generateToken = (id) => {
 
 const verifyTokenAccess = (req, res) => {
     let token = req.body.access;
-    jwt.verify(token, signature, function(err, decoded) {
+    jwt.verify(token, signature, (err, decoded) => {
         if (err) {
             res.json({name: "Error", text: err});
         } else {
@@ -352,7 +347,6 @@ module.exports.createUserMobile = createUserMobile;
 module.exports.resendCodeActivate = resendCodeActivate;
 module.exports.confirmUser = confirmUser;
 module.exports.auth = auth;
-module.exports.authVK = authVK;
 module.exports.generateToken = generateToken;
 module.exports.verifyTokenAccess = verifyTokenAccess;
 module.exports.verifyTokenRefresh = verifyTokenRefresh;

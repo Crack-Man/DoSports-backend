@@ -1,8 +1,8 @@
 const express = require("express");
 const path = require("../config/path").path.frontend;
 const api = {
-    users: require("./users/index.js"),
-    vkAuth: require("./vk-auth/index.js")
+    users: require("./users"),
+    vkAuth: require("./vk-auth")
 }
 const controllers = {
     users: require("../controllers/controller-users.js"),
@@ -25,6 +25,8 @@ router.get("/api/regions/get-regions", controllers.regions.showRegions);
 // Программы
 router.get("/api/programs/get-lifestyles", controllers.programs.showLifestyles);
 router.get("/api/programs/get-weight-categories", controllers.programs.showWeightCategories);
+
+router.get("/cookies", (req, res) => {res.json(req.cookies)});
 
 // За все остальные ссылки отвечает Vue
 router.get('*', (req, res) => {

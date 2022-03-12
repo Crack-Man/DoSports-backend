@@ -321,7 +321,7 @@ let data = {
     username: "crak_man",
     gender: "male",
     id: 14789124,
-    emails: [{value: "example@gmail.com"}]
+    email: "example@gmail.com" // свойство может отсутствовать
 }
 ```
 
