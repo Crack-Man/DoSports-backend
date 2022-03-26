@@ -120,9 +120,9 @@ response.data представляет собой JSON следующего ви
 
 ```js
 let data = {
-  name: "Success", // или "Error"
-  text: "", // текст ошибки, если name === "Error"
-  token: {access: "...", refresh: "..."} // если name === "Success"
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+    token: {access: "...", refresh: "..."} // если name === "Success"
 }
 ```
 
@@ -346,9 +346,9 @@ response.data представляет собой JSON следующего ви
 
 ```js
 let data = {
-  name: "Success", // или "Error"
-  text: "", // текст ошибки, если name === "Error"
-  token: {access: "...", refresh: "..."} // если name === "Success"
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+    token: {access: "...", refresh: "..."} // если name === "Success"
 }
 ```
 
@@ -361,7 +361,7 @@ let response = await axios.get(`https://dosports.ru/api/regions/get-regions`);
 console.log(response.data) // JSON регионов
 ```
 
-#### Программы
+#### Программы (база)
 
 ##### 1. Получить список образов жизни
 
@@ -375,4 +375,92 @@ console.log(response.data) // JSON образов жизни
 ```js
 let response = await axios.get(`https://dosports.ru/api/programs/get-weight-categories`);
 console.log(response.data) // JSON весовых категорий
+```
+
+##### 3. Создать программу
+
+```js
+let newUser = {
+    idUser: 1,
+    bmi: 20,
+    lifestyle: 1, // id образа жизни из БД
+    weight: 60,
+    weightCategory: 1, // id весовой категории из БД
+    height: 173,
+    trainPrepare: 0, // или 1 (можно строковый тип данных)
+    norm: {
+        proteins: 100,
+        fats: 100,
+        carbohydrates: 100,
+        calories: 100,
+        fibers: 100
+    }
+}
+
+let response = await axios.post("https://dosports.ru/api/programs/get-lifestyles", program);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
+##### 4. Проверить, имеет ли на данный момент пользователь активную программу
+
+```js
+let idUser = 1;
+
+let response = await axios.get(`https://dosports.ru/api/programs/user-has-active-program/${idUser}`);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: true, // или false, либо текст ошибки, если name === "Error"
+}
+```
+
+##### 5. Закрыть программу (сделать неактивной)
+
+```js
+let program = {
+    id: 1
+};
+
+let response = await axios.post(`https://dosports.ru/api/programs/deactivate-program`, program);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: true, // текст ошибки, если name === "Error"
+}
+```
+
+##### 6. Показать базовую информацию о программе
+
+```js
+let program = {
+    id: 1
+};
+
+let response = await axios.post(`https://dosports.ru/api/programs/get-program`, program);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+    program: {...}
+}
 ```

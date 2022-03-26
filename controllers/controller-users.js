@@ -116,6 +116,7 @@ const createUserMobile = (req, res) => {
                         res.send(err);
                     } else {
                         if (!data[0]["count"]) {
+                            newUser.password = bcrypt.hashSync(newUser.password, 10);
                             models.users.addUserMobile(newUser, (err, id) => {
                                 if (err) {
                                     res.send(err);

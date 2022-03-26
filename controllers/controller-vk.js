@@ -51,6 +51,8 @@ const createUserVk = (req, res) => {
                     } else {
                         if (!data[0]["count"]) {
                             newUser.gender = newUser.gender[0];
+                            let fullname_split = newUser.fullname.split(" ");
+                            newUser.fullname = `${fullname_split[1]} ${fullname_split[0]}`;
                             models.vk.addUserVk(newUser, (err, id) => {
                                 if (err) {
                                     res.send(err);
@@ -76,9 +78,7 @@ const checkUserInDb = (req, res) => {
         if (err) {
             res.send(err);
         } else {
-            if (data[0]["count"]) {
-                res.json({name: "Success", match: true, token: controllers.users.generateToken(data[0]["id"])});
-            }
+            res.json({name: "Success", match: !!data[0]["count"], token: controllers.users.generateToken(data[0]["id"])});
         }
     })
 }
