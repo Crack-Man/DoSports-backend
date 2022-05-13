@@ -19,6 +19,13 @@ const showUser = (req, res) => {
     };
     if (req.user.emails) payload.email = req.user.emails[0].value;
     let token = jwt.sign(payload, signature, { expiresIn: 600 });
+    if (req.device.type === "phone") {
+        res.send(
+            `<script>
+                window.location.replace("http://localhost:8080/registration-vk/${token}");
+            </script>`
+        );
+    }
     res.send(
         `<script>
             localStorage.setItem('vk-token', '${token}');
@@ -76,7 +83,7 @@ const checkUserInDb = (req, res) => {
     let user = req.body;
     models.vk.countIdVk(user.id, (err, data) => {
         if (err) {
-            res.send(err);
+            res.json({name: "Error", text: err});
         } else {
             res.json({name: "Success", match: !!data[0]["count"], token: controllers.users.generateToken(data[0]["id"])});
         }

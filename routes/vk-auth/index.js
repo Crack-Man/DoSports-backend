@@ -28,14 +28,6 @@ passport.use(new VKontakteStrategy({
             return done(null, profile)
         }
 ));
-    
-// passport.serializeUser(function (user, done) {
-//     return done(null, user);
-// });
-
-// passport.deserializeUser(function (id, done) {
-//     return done(null, id);
-// });
 
 passport.serializeUser(function(user, done) {
    done(null, user);

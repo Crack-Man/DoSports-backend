@@ -83,7 +83,7 @@ console.log(response.data); // true или false
 
 ```js
 let newUser = {
-    fullname: "Иванов Иван", // минимум два слова, кириллица, максимальное количество символов: 50
+    fullname: "Иванов Иван", // максимальное количество символов: 50
     gender: "m", // или "f"
     birthday: '1999-10-18', // в формате YYYY-MM-DD
     id_region: 1,
@@ -305,27 +305,54 @@ let data = {
 Необходимо произвести редирект на данную страницу: https://dosports.ru/api/vk-auth, где пользователь выдает необходимые
 права. После данной процедуры происходит редирект на страницу https://dosports.ru/vk-reg.
 
-Чтобы прочесть данные VK пользователя, делается следующий запрос (запрос делать после выдачи пользователем прав на
-использование):
+Далее идет работа с токеном, выдаваемым VK.
+Если пользователь пытается авторизоваться с ПК, то в Local Storage появляется ключ vk-token.
+Если мобильное приложение, токен можно получить из url-слага.
+
+Далее этот токен нужно дешифровать, для этого используется следующий POST-запрос:
 
 ```js
-let response = await axios.get(`https://dosports.ru/api/vk-auth/user`);
-console.log(response.data) // JSON VK данных о пользователя
+let token = {value: "sadhjasdanffabh"};
+let response = await axios.post(`https://dosports.ru/api/vk-auth/decode-token-vk`, token);
 ```
 
-Необходимые свойства объекта:
+response.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
-    displayName: "Ivan Ivanov",
-    username: "crak_man",
-    gender: "male",
-    id: 14789124,
-    email: "example@gmail.com" // свойство может отсутствовать
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+    user: {  // если name === "Success"
+      displayName: "Ivan Ivanov",
+      username: "crak_man",
+      gender: "male",
+      id: 14789124,
+      email: "example@gmail.com" // свойство может отсутствовать
+    }
 }
 ```
 
-##### 17. Добавить пользователя VK
+##### 17. Проверить, есть ли пользователь VK в базе данных
+
+```js
+let id_vk = 14789124;
+let user = {id: id_vk};
+
+let response = await axios.post(`https://dosports.ru/api/vk-auth/user-in-db`, user);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+    match: true, // или false, если пользователь отсутсвует
+    token: {access: "...", refresh: "..."} // если match === true
+}
+```
+
+##### 18. Добавить пользователя VK
 
 ```js
 let newUser = {

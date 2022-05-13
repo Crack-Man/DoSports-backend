@@ -4,6 +4,7 @@ const cors = require("cors");
 const router = require("./routes/routes.js");
 const bodyParser = require('body-parser');
 const cookieParser = require("cookie-parser");
+const device = require('express-device');
 
 const passport = require("passport");
 
@@ -11,6 +12,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(device.capture());
  
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
