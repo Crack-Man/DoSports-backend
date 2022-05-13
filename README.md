@@ -356,7 +356,7 @@ let data = {
 
 ```js
 let newUser = {
-    fullname: "Ivan Ivanov", // минимум два слова, кириллица, максимальное количество символов: 50
+    fullname: "Ivan Ivanov", // максимальное количество символов: 50
     gender: "male", // или "female", или "f", "m" (сервер сам исправит)
     birthday: '1999-10-18', // в формате YYYY-MM-DD
     id_region: 1,
