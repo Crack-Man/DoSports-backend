@@ -363,6 +363,7 @@ let newUser = {
     id_vk: 235782358,
     email: "example@gmail.com", // латинские символы или цифры, без пробелов
     login: "Crack_Man", // латинские символы, цифры, знак подчеркивания, точка, максимальное количество символов: 20
+    password: "1234567" // значение может быть пустым
 }
 
 let response = await axios.post(`https://dosports.ru/api/vk-auth/add-user`, newUser);

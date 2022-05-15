@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const signature = require('../config/signature.js');
+const bcrypt = require('bcryptjs');
 
 const models = {
     users: require("../models/model-users.js"),
@@ -60,6 +61,7 @@ const createUserVk = (req, res) => {
                             newUser.gender = newUser.gender[0];
                             let fullname_split = newUser.fullname.split(" ");
                             newUser.fullname = `${fullname_split[1]} ${fullname_split[0]}`;
+                            newUser.password = newUser.password ? bcrypt.hashSync(newUser.password, 10) : null;
                             models.vk.addUserVk(newUser, (err, id) => {
                                 if (err) {
                                     res.send(err);

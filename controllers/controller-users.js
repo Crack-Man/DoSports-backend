@@ -181,7 +181,9 @@ const auth = (req, res) => {
             res.send(err);
         } else if (data.length) {
             let userAuth = data[0];
-            if (bcrypt.compareSync(user.password, userAuth["password"])) {
+            if (!userAuth["password"]) {
+                res.json({message: "Пользователь не найден"});
+            } else if (bcrypt.compareSync(user.password, userAuth["password"])) {
                 res.json({message: "", token: generateToken(userAuth["id"])});
             } else {
                 res.json({message: "Неверный пароль"});

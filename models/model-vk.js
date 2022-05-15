@@ -7,6 +7,7 @@ const textError = (err) => {
 const addUserVk = (newUser, res) => {
     db.query(`INSERT INTO users SET
         login = ?,
+        password = ?,
         email = ?,
         fullname = ?,
         birthday = ?,
@@ -14,7 +15,7 @@ const addUserVk = (newUser, res) => {
         id_region = ?,
         id_vk = ?,
         date_reg = CURRENT_DATE()`,
-        [newUser.login, newUser.email,
+        [newUser.login, newUser.password, newUser.email,
         newUser.fullname, newUser.birthday, newUser.gender, newUser.id_region, newUser.id_vk], (err, data) => {
             if(err) {
                 res(textError(err), null);
