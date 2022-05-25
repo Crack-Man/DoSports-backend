@@ -415,6 +415,7 @@ let newUser = {
     weight: 60,
     weightCategory: 1, // id весовой категории из БД
     height: 173,
+    aim: 0, // 0 - поддержание веса, 1 - сброс веса, 2 - набор веса
     trainPrepare: 0, // или 1 (можно строковый тип данных)
     norm: {
         proteins: 100,
@@ -491,4 +492,133 @@ let data = {
     text: "", // текст ошибки, если name === "Error"
     program: {...}
 }
+```
+
+#### Программы (прием пищи)
+
+##### 1. Получить список продуктов
+
+```js
+let response = await axios.get(`https://dosports.ru/api/programs/get-foods`);
+console.log(response.data) // JSON продуктов
+```
+
+##### 2. Получить список категорий продуктов
+
+```js
+let response = await axios.get(`https://dosports.ru/api/programs/get-food-categories`);
+console.log(response.data) // JSON категорий продуктов
+```
+
+##### 3. Добавить приемы пищи на текущий день
+
+```js
+this.program = {
+  idProgram: 1,
+  mealsNumber: 3, // до 5
+  date: "25.05.2022",
+  carbohydratesDegree: 1, // 0 - низкоуглеводный день, 1 - средне, 2 - высоко
+  mealSchedule: [
+    {
+      time: "07:00-09:00",
+      idOrder: 1, // название приема пищи (завтрак, обед и т.д.)
+    },
+
+    {
+      time: "12:00-14:00",
+      idOrder: 3,
+    },
+
+    {
+      time: "16:00-18:00",
+      idOrder: 5,
+    }
+  ]
+};
+
+let response = await axios.post(`https://dosports.ru/api/programs/add-program-diet`, program);
+```
+
+
+##### 4. Приемы приемы пищи и продукты на каждый прием на текущий день
+
+```js
+let program = {
+    idProgram: 1,
+    date: "25.05.2022"
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/get-program-diet`, program);
+console.log(response.data) // JSON приемов пищи и продуктов
+```
+
+##### 5. Удалить приемы пищи вместе с входящими в него продуктами/блюдами
+
+```js
+let program = {
+    id: 1, // поле id_program_diet, обозначающее программу диеты на текущий день
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/delete-program-diet`, program);
+```
+
+##### 6. Добавить продукт в прием пищи
+
+```js
+let food = {
+    idFood: 1,
+    amount: 100, // в граммах
+    idMeal: 1, // id приема пищи
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/add-meal-food`, food);
+```
+
+##### 7. Получить продукты/блюда на прием пищи
+
+```js
+let id = 1;
+
+let response = await axios.get(`https://dosports.ru/api/programs/get-meal-foods/${id}`);
+console.log(response.data) // JSON продуктов/блюд
+```
+
+##### 8. Удалить продукт/блюдо из приема пищи
+
+```js
+let food = {
+    id: 1
+};
+
+let response = await axios.post(`https://dosports.ru/api/programs/delete-meal-food`, food);
+```
+
+##### 9. Получить продукт по его id
+
+```js
+let id = 1;
+
+let response = await axios.get(`https://dosports.ru/api/programs/get-food-by-id/${id}`);
+console.log(response.data) // JSON продукта
+```
+
+##### 10. Обновить граммовку продукта/блюда
+
+```js
+let food = {
+    id: 1,
+    amount: 200,
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/update-amount-food`, food);
+```
+
+##### 11. Получить все продукты/блюда программы по id
+
+```js
+let program = {
+    id: 1,
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/get-meal-data-by-program-id`, program);
 ```

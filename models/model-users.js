@@ -10,7 +10,7 @@ const textError = (err) => {
 }
 
 const getUsers = (res) => {
-    db.query('SELECT * FROM users', (err, data) => {
+    db.query('SELECT users.id, users.login, users.password, users.email, users.fullname, users.birthday, users.gender, users.id_region, users.id_vk, users.pro, users.pro_last_datetime, users.admin, users.date_reg, regions.name AS region_name FROM users INNER JOIN regions ON users.id_region = regions.id', (err, data) => {
         if (err) {
             res(textError(err), null);
         } else {
@@ -153,7 +153,7 @@ const findUser = (user, res) => {
 }
 
 const getUser = (id, res) => {
-    db.query(`SELECT * FROM users WHERE id = ?`, [id], (err, data) => {
+    db.query(`SELECT users.id, users.login, users.password, users.email, users.fullname, users.birthday, users.gender, users.id_region, users.id_vk, users.pro, users.pro_last_datetime, users.admin, users.date_reg, regions.name AS region_name FROM users INNER JOIN regions ON users.id_region = regions.id WHERE users.id = ?`, [id], (err, data) => {
         if (err) {
             res(textError(err), null);
         } else {
@@ -242,6 +242,26 @@ const updatePassword = (input, res) => {
     })
 }
 
+const updatePersonalData = (user, res) => {
+    db.query("UPDATE users SET fullname = ?, birthday = ?, email = ?, id_region = ? WHERE id = ?", [user.fullname, user.birthday, user.email, user.id_region, user.id], (err, data) =>{
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, {name: "Success"})
+        }
+    })
+}
+
+const updateProfilePassword = (user, res) => {
+    db.query("UPDATE users SET password = ? WHERE id = ?", [user.password, user.id], (err, data) =>{
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, {name: "Success"})
+        }
+    })
+}
+
 module.exports.getUsers = getUsers;
 module.exports.getLogins = getLogins;
 module.exports.getEmails = getEmails;
@@ -259,3 +279,5 @@ module.exports.getRestoreCode = getRestoreCode;
 module.exports.sendMail = sendMail;
 module.exports.findRestoreCode = findRestoreCode;
 module.exports.updatePassword = updatePassword;
+module.exports.updatePersonalData = updatePersonalData;
+module.exports.updateProfilePassword = updateProfilePassword;

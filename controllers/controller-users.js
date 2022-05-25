@@ -340,6 +340,29 @@ const changePassword = (req, res) => {
     })
 }
 
+const changePersonalData = (req, res) => {
+    let user = req.body;
+    models.users.updatePersonalData(user, (err, data) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json({name: "Success", text: "Данные успешно изменены"})
+        }
+    })
+}
+
+const changeProfilePassword = (req, res) => {
+    let user = req.body;
+    user.password = bcrypt.hashSync(user.password, 10);
+    models.users.updateProfilePassword(user, (err, data) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json({name: "Success", text: "Пароль успешно изменен"})
+        }
+    })
+}
+
 module.exports.showUsers = showUsers;
 module.exports.showLogins = showLogins;
 module.exports.showEmails = showEmails;
@@ -357,3 +380,5 @@ module.exports.sendCodeRestore = sendCodeRestore;
 module.exports.resendCodeRestore = resendCodeRestore;
 module.exports.compareCodeRestore = compareCodeRestore;
 module.exports.changePassword = changePassword;
+module.exports.changePersonalData = changePersonalData;
+module.exports.changeProfilePassword = changeProfilePassword;

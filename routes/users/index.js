@@ -27,6 +27,12 @@ router.post("/verify-token-refresh", controllers.users.verifyTokenRefresh);
 router.post("/restore-password/send-code", controllers.users.sendCodeRestore);
 router.post("/restore-password/resend-code", controllers.users.resendCodeRestore);
 router.post("/restore-password/compare-code", controllers.users.compareCodeRestore);
+
+
+// Изменение данных
 router.post("/restore-password/change-password", controllers.users.changePassword);
+router.post("/change-personal-data", controllers.users.changePersonalData);
+router.post("/change-password", controllers.users.changeProfilePassword);
+
 
 module.exports = router;
