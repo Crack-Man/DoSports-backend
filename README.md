@@ -305,9 +305,8 @@ let data = {
 Необходимо произвести редирект на данную страницу: https://dosports.ru/api/vk-auth, где пользователь выдает необходимые
 права. После данной процедуры происходит редирект на страницу https://dosports.ru/vk-reg.
 
-Далее идет работа с токеном, выдаваемым VK.
-Если пользователь пытается авторизоваться с ПК, то в Local Storage появляется ключ vk-token.
-Если мобильное приложение, токен можно получить из url-слага.
+Далее идет работа с токеном, выдаваемым VK. Если пользователь пытается авторизоваться с ПК, то в Local Storage
+появляется ключ vk-token. Если мобильное приложение, токен можно получить из url-слага.
 
 Далее этот токен нужно дешифровать, для этого используется следующий POST-запрос:
 
@@ -323,11 +322,11 @@ let data = {
     name: "Success", // или "Error"
     text: "", // текст ошибки, если name === "Error"
     user: {  // если name === "Success"
-      displayName: "Ivan Ivanov",
-      username: "crak_man",
-      gender: "male",
-      id: 14789124,
-      email: "example@gmail.com" // свойство может отсутствовать
+        displayName: "Ivan Ivanov",
+        username: "crak_man",
+        gender: "male",
+        id: 14789124,
+        email: "example@gmail.com" // свойство может отсутствовать
     }
 }
 ```
@@ -514,33 +513,41 @@ console.log(response.data) // JSON категорий продуктов
 
 ```js
 this.program = {
-  idProgram: 1,
-  mealsNumber: 3, // до 5
-  date: "25.05.2022",
-  carbohydratesDegree: 1, // 0 - низкоуглеводный день, 1 - средне, 2 - высоко
-  mealSchedule: [
-    {
-      time: "07:00-09:00",
-      idOrder: 1, // название приема пищи (завтрак, обед и т.д.)
-    },
+    idProgram: 1,
+    mealsNumber: 3, // до 5
+    date: "25.05.2022",
+    carbohydratesDegree: 1, // 0 - низкоуглеводный день, 1 - средне, 2 - высоко
+    mealSchedule: [
+        {
+            time: "07:00-09:00",
+            idOrder: 1, // название приема пищи (завтрак, обед и т.д.)
+        },
 
-    {
-      time: "12:00-14:00",
-      idOrder: 3,
-    },
+        {
+            time: "12:00-14:00",
+            idOrder: 3,
+        },
 
-    {
-      time: "16:00-18:00",
-      idOrder: 5,
-    }
-  ]
+        {
+            time: "16:00-18:00",
+            idOrder: 5,
+        }
+    ]
 };
 
 let response = await axios.post(`https://dosports.ru/api/programs/add-program-diet`, program);
 ```
 
+response.data представляет собой JSON следующего вида:
 
-##### 4. Приемы приемы пищи и продукты на каждый прием на текущий день
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
+##### 4. Получить приемы пищи и продукты на каждый прием за текущий день
 
 ```js
 let program = {
@@ -562,6 +569,15 @@ let program = {
 let response = await axios.post(`https://dosports.ru/api/programs/delete-program-diet`, program);
 ```
 
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
 ##### 6. Добавить продукт в прием пищи
 
 ```js
@@ -572,6 +588,15 @@ let food = {
 }
 
 let response = await axios.post(`https://dosports.ru/api/programs/add-meal-food`, food);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
 ```
 
 ##### 7. Получить продукты/блюда на прием пищи
@@ -591,6 +616,15 @@ let food = {
 };
 
 let response = await axios.post(`https://dosports.ru/api/programs/delete-meal-food`, food);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
 ```
 
 ##### 9. Получить продукт по его id
@@ -613,12 +647,260 @@ let food = {
 let response = await axios.post(`https://dosports.ru/api/programs/update-amount-food`, food);
 ```
 
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
 ##### 11. Получить все продукты/блюда программы по id
 
 ```js
 let program = {
-    id: 1,
+    id: 1, // id программы
 }
 
 let response = await axios.post(`https://dosports.ru/api/programs/get-meal-data-by-program-id`, program);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+    foods: {
+        //...
+    }
+}
+```
+
+##### 12. Создать собственный продукт
+
+```js
+let food = {
+    name: "Хлеб",
+    idCategory: 1,
+    proteins: 10,
+    fats: 10,
+    carbohydrates: 10,
+    calories: 10,
+    fibers: 10,
+    glycemicIndex: 10,
+    idAuthor: 1
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/add-personal-food`, food);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
+##### 13. Получить список собственных продуктов
+
+```js
+let id = 1; // id пользователя
+
+let response = await axios.get(`https://dosports.ru/api/programs/get-personal-foods/${id}`);
+console.log(response.data) // JSON продуктов
+```
+
+##### 14. Обновить данные по собственному продукту
+
+```js
+let food = {
+    id: 1, // id продукта
+    name: "Хлеб",
+    idCategory: 1,
+    proteins: 10,
+    fats: 10,
+    carbohydrates: 10,
+    calories: 10,
+    fibers: 10,
+    glycemicIndex: 10,
+    idAuthor: 1
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/update-personal-food`, food);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
+##### 15. Удалить собственный продукт
+
+```js
+let food = {
+    id: 1, // id продукта
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/delete-personal-food`, food);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
+##### 15. Создать рацион
+
+```js
+let ration = {
+    idUser: 1,
+    name: "Завтрак",
+    foods: {
+        id_food: 1,
+        amount: 50,
+    }
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/add-ration`, ration);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
+##### 16. Добавить рациону продукт
+
+```js
+let food = {
+    idFood: 1,
+    amount: 50,
+    idRation: 1,
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/add-ration-food`, food);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
+##### 17. Добавить рацион в прием пищи
+
+```js
+let ration = {
+    idMeal: 1,
+    foods: {
+        id_food: 1,
+        amount: 50,
+    }
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/add-ration-to-meal`, ration);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
+##### 18. Обновить граммовку продукта из рациона
+
+```js
+let food = {
+    id: 1, // id продукта из рациона
+    amount: 50,
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/update-amount-ration-food`, food);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
+##### 19. Удалить продукт из рациона
+
+```js
+let food = {
+    id: 1, // id продукта из рациона
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/delete-ration-food`, food);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
+##### 20. Получить список рационов пользователя
+
+```js
+let id = 1; // id пользователя
+
+let response = await axios.get(`https://dosports.ru/api/programs/get-users-rations/${id}`);
+console.log(response.data) // JSON рационов
+```
+
+##### 21. Получить список продуктов/блюд рациона
+
+```js
+let id = 1; // id рациона
+
+let response = await axios.get(`https://dosports.ru/api/programs/get-ration-foods/${id}`);
+console.log(response.data) // JSON продуктов
+```
+
+##### 22. Удалить рацион
+
+```js
+let ration = {
+    id: 1, // id продукта из рациона
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/delete-ration`, ration);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
 ```
