@@ -73,7 +73,7 @@ const getProgramById = (id, res) => {
 }
 
 const getFoods = (res) => {
-    db.query('SELECT * FROM foods ORDER BY name', (err, data) => {
+    db.query('SELECT * FROM foods WHERE author IS NULL ORDER BY name', (err, data) => {
         if (err) {
             res(textError(err), null);
         } else {
@@ -135,7 +135,7 @@ const addProgramDiet = (program, res) => {
 
 const getProgramDiet = (input, res) => {
     db.query(`SELECT dm.id, dm.id_program_diet, dm.id_order, dm.time FROM program_diet_meals AS dm INNER JOIN program_diet AS d ON dm.id_program_diet = d.id
-            WHERE date = Cast(? as date) AND id_program = ? ORDER BY dm.id_order ASC`,
+            WHERE date = ? AND id_program = ? ORDER BY dm.id_order ASC`,
             [input.date, input.idProgram], (err, data) => {
         if (err) {
             res(textError(err), null);
@@ -239,6 +239,222 @@ const updateAmountFood = (food, res) => {
     });
 }
 
+const getMealDataByProgramId = (id, res) => {
+    db.query(`SELECT mf.id, mf.id_food, mf.id_dish, mf.amount, pdm.id_order,
+    pdm.time, pd.id_program, pd.date, pd.carbohydrates_degree, pd.meals_number
+    FROM meal_foods AS mf INNER JOIN program_diet_meals AS pdm
+    ON mf.id_meal = pdm.id INNER JOIN program_diet AS pd
+    ON pdm.id_program_diet = pd.id WHERE pd.id_program = ?`,
+    [id], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const addPersonalFood = (food, res) => {
+    db.query(`INSERT INTO foods SET name = ?, id_food_category = ?, proteins = ?,
+    fats = ?, carbohydrates = ?, calories = ?, fibers = ?, glycemic_index = ?, author = ?`,
+    [food.name, food.idCategory, food.proteins, food.fats, food.carbohydrates,
+    food.calories, food.fibers, food.glycemicIndex, food.idAuthor], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const getPersonalFoods = (id, res) => {
+    db.query(`SELECT * FROM foods WHERE author = ?`, [id], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const updatePersonalFood = (food, res) => {
+    db.query(`UPDATE foods SET name = ?, id_food_category = ?, proteins = ?,
+    fats = ?, carbohydrates = ?, calories = ?, fibers = ?, glycemic_index = ? WHERE id = ?`,
+    [food.name, food.idCategory, food.proteins, food.fats, food.carbohydrates,
+    food.calories, food.fibers, food.glycemicIndex, food.id], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const deletePersonalFood = (id, res) => {
+    db.query(`DELETE FROM foods WHERE id = ?`, [id], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const addRation = (ration, res) => {
+    db.beginTransaction((err) => {
+        if (err) {
+            res(textError(err), null);
+        }
+        db.query(`INSERT INTO rations SET
+        name = ?, id_user = ?`,
+        [ration.name, ration.idUser], (err, data) => {
+            if (err) {
+                return db.rollback(() => {
+                    res(textError(err), null);
+                });
+            } else {
+                let insertId = data.insertId;
+                for (let i = 0; i < ration.foods.length; i++) {
+                    db.query(`INSERT INTO ration_foods SET
+                    id_food = ?, amount = ?, id_ration = ?`,
+                    [ration.foods[i].id_food, ration.foods[i].amount, insertId], (err) => {
+                        if (err) {
+                            return db.rollback(() => {
+                                res(textError(err), null);
+                            });
+                        }
+                        if (i === ration.foods.length - 1) {
+                            db.commit((err) => {
+                                if (err) {
+                                    return db.rollback(() => {
+                                        res(textError(err), null);
+                                    });
+                                }
+                                res(null, {name: "Success", text: ""});
+                            })
+                        }
+                    });
+                }
+                
+            }
+        });
+    })
+}
+
+const addRationFood = (food, res) => {
+    db.query(`INSERT INTO ration_foods SET
+    id_food = ?, amount = ?, id_ration = ?`,
+    [food.idFood, food.amount, food.idRation], (err) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, {name: "Success", text: ""});
+        }
+    });
+}
+
+const addRationToMeal = (ration, res) => {
+    db.beginTransaction((err) => {
+        if (err) {
+            res(textError(err), null);
+        }
+        for (let i = 0; i < ration.foods.length; i++) {
+            db.query(`INSERT INTO meal_foods SET
+            id_food = ?, amount = ?, id_meal = ?`,
+            [ration.foods[i].id_food, ration.foods[i].amount, ration.idMeal], (err) => {
+                if (err) {
+                    return db.rollback(() => {
+                        res(textError(err), null);
+                    });
+                }
+                if (i === ration.foods.length - 1) {
+                    db.commit((err) => {
+                        if (err) {
+                            return db.rollback(() => {
+                                res(textError(err), null);
+                            });
+                        }
+                        res(null, {name: "Success", text: ""});
+                    })
+                }
+            });
+        }
+    })
+}
+
+const updateAmountRationFood = (food, res) => {
+    db.query(`UPDATE ration_foods SET amount = ? WHERE id = ?`, [food.amount, food.id], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const deleteRationFood = (id, res) => {
+    db.query(`DELETE FROM ration_foods WHERE id = ?`, [id], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const getUsersRations = (id, res) => {
+    db.query(`SELECT * FROM rations WHERE id_user = ?`, [id], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const getRationFoods = (id, res) => {
+    db.query(`SELECT * FROM ration_foods WHERE id_ration = ?`, [id], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const deleteRation = (id, res) => {
+    db.beginTransaction((err) => {
+        if (err) {
+            res(textError(err), null);
+        }
+        db.query(`DELETE FROM ration_foods WHERE id_ration = ?`,
+        [id], (err, data) => {
+            if (err) {
+                return db.rollback(() => {
+                    res(textError(err), null);
+                });
+            } else {
+                db.query(`DELETE FROM rations WHERE id = ?`,
+                [id], (err) => {
+                    if (err) {
+                        return db.rollback(() => {
+                            res(textError(err), null);
+                        });
+                    }
+                    db.commit((err) => {
+                        if (err) {
+                            return db.rollback(() => {
+                                res(textError(err), null);
+                            });
+                        }
+                        res(null, {name: "Success", text: ""});
+                    })
+                });
+            }
+        });
+    })
+}
+
 module.exports.getLifestyles = getLifestyles;
 module.exports.getWeightCategories = getWeightCategories;
 module.exports.addProgram = addProgram;
@@ -255,3 +471,16 @@ module.exports.getMealFoods = getMealFoods;
 module.exports.deleteMealFood = deleteMealFood;
 module.exports.getFoodById = getFoodById;
 module.exports.updateAmountFood = updateAmountFood;
+module.exports.getMealDataByProgramId = getMealDataByProgramId;
+module.exports.addPersonalFood = addPersonalFood;
+module.exports.getPersonalFoods = getPersonalFoods;
+module.exports.updatePersonalFood = updatePersonalFood;
+module.exports.deletePersonalFood = deletePersonalFood;
+module.exports.addRation = addRation;
+module.exports.addRationFood = addRationFood;
+module.exports.addRationToMeal = addRationToMeal;
+module.exports.updateAmountRationFood = updateAmountRationFood;
+module.exports.deleteRationFood = deleteRationFood;
+module.exports.getUsersRations = getUsersRations;
+module.exports.getRationFoods = getRationFoods;
+module.exports.deleteRation = deleteRation;

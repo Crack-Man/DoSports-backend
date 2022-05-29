@@ -24,4 +24,21 @@ router.post("/delete-meal-food", controllers.programs.removeMealFood);
 router.get("/get-food-by-id/:id", controllers.programs.showFoodById);
 router.post("/update-amount-food", controllers.programs.changeAmountFood);
 
+router.post("/get-meal-data-by-program-id", controllers.programs.showMealDataByProgramId)
+
+router.post("/add-personal-food", controllers.programs.createPersonalFood);
+router.get("/get-personal-foods/:id", controllers.programs.showPersonalFoods);
+router.post("/update-personal-food", controllers.programs.changePersonalFood);
+router.post("/delete-personal-food", controllers.programs.removePersonalFood);
+
+router.post("/add-ration", controllers.programs.createRation);
+router.post("/add-ration-food", controllers.programs.createRationFood);
+router.post("/add-ration-to-meal", controllers.programs.createRationToMeal);
+router.post("/update-amount-ration-food", controllers.programs.changeAmountRationFood);
+router.post("/delete-ration-food", controllers.programs.removeRationFood);
+router.get("/get-users-rations/:id", controllers.programs.showUsersRations);
+router.get("/get-ration-foods/:id", controllers.programs.showRationFoods);
+router.post("/delete-ration", controllers.programs.removeRation);
+
+
 module.exports = router;
