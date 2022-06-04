@@ -904,3 +904,218 @@ let data = {
     text: "", // текст ошибки, если name === "Error"
 }
 ```
+
+##### 23. Добавить блюдо
+
+```js
+let dish = {
+    idUser: 1,
+    name: "Оливье",
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/add-dish`, dish);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
+##### 24. Добавить продукт в блюдо
+
+```js
+let food = {
+    idFood: 1,
+    amount: 100,
+    idDish: 1,
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/add-dish-food`, food);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
+##### 25. Удалить блюдо
+
+```js
+let dish = {
+    id: 1
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/delete-dish`, dish);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
+##### 26. Получить список блюд пользователя
+
+```js
+idUser = 1;
+
+let response = await axios.get(`https://dosports.ru/api/programs/get-users-dishes/${idUser}`);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+    dishes: [
+        // Список блюд       
+    ]
+}
+```
+
+##### 27. Получить список продуктов в блюде
+
+```js
+idDish = 1;
+
+let response = await axios.get(`https://dosports.ru/api/programs/get-dish-foods/${idDish}`);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+    foods: [
+        // Список продуктов       
+    ]
+}
+```
+
+##### 28. Обновить граммовку продукта блюда
+
+```js
+let food = {
+    id: 1, // id продукта из блюда
+    amount: 50,
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/update-amount-dish-food`, food);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
+##### 29. Удалить продукт из блюда
+
+```js
+let food = {
+    id: 1 // id продукта из блюда
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/delete-dish-food`, food);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
+##### 30. Добавить блюдо в прием пищи
+
+```js
+let dish = {
+    idDish: 1,
+    amount: 50,
+    idMeal: 1
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/add-meal-dish`, dish);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
+#### Программы (тренировки)
+
+#### Монетизация
+
+##### 1. Получить прайслист
+
+```js
+let response = await axios.get(`https://dosports.ru/api/programs/get-pricelist`);
+console.log(response.data) // JSON списка услуг
+```
+
+##### 2. Получить ссылку на оплату
+
+```js
+let payData = {
+    days: 1,
+    cost: 1, // в рублях
+    user: {
+        email: "...",
+    }
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/get-pay-link`, payData);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+    link: "..." // ссылка на оплату
+}
+```
+
+##### 3. Проверить, имеет ли пользователь премиум-подписку
+
+```js
+let user = {
+    id: 1
+}
+
+let response = await axios.post(`https://dosports.ru/api/programs/user-is-pro`, payData);
+```
+
+response.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+    pro: true // или false, если пользователь не имеет подписки
+}
+```
