@@ -40,5 +40,19 @@ router.get("/get-users-rations/:id", controllers.programs.showUsersRations);
 router.get("/get-ration-foods/:id", controllers.programs.showRationFoods);
 router.post("/delete-ration", controllers.programs.removeRation);
 
+router.post("/add-dish", controllers.programs.createDish);
+router.post("/add-dish-food", controllers.programs.createDishFood);
+router.post("/delete-dish", controllers.programs.removeDish);
+router.get("/get-users-dishes/:id", controllers.programs.showDishes);
+router.get("/get-dish-foods/:id", controllers.programs.showDishFoods);
+router.post("/update-amount-dish-food", controllers.programs.changeAmountDishFood);
+router.post("/delete-dish-food", controllers.programs.removeDishFood);
+router.post("/add-meal-dish", controllers.programs.createMealDish);
+
+router.post("/get-train-mods", controllers.programs.showTrainMods);
+router.post("/get-trains", controllers.programs.showTrains);
+router.post("/add-train-program", controllers.programs.createTrainProgram);
+router.post("/get-train-program", controllers.programs.showTrainProgram);
+router.post("/delete-train-program", controllers.programs.removeTrainProgram);
 
 module.exports = router;

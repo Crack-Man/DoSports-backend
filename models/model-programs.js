@@ -196,10 +196,10 @@ const addMealFood = (food, res) => {
 }
 
 const getMealFoods = (id, res) => {
-    db.query(`SELECT mf.id, mf.id_food, mf.amount, mf.id_meal,
-    f.name, f.id_food_category, f.proteins, f.fats, f.carbohydrates, f.calories,
+    db.query(`SELECT mf.id, mf.id_food, mf.id_dish, mf.amount, mf.id_meal,
+    f.name, d.name AS name_dish, f.id_food_category, f.proteins, f.fats, f.carbohydrates, f.calories,
     f.fibers, f.glycemic_index, f.author FROM meal_foods AS mf
-    INNER JOIN foods AS f ON mf.id_food = f.id WHERE id_meal = ?`,
+    LEFT JOIN foods AS f ON mf.id_food = f.id LEFT JOIN dishes AS d ON mf.id_dish = d.id WHERE id_meal = ?`,
     [id], (err, data) => {
         if (err) {
             res(textError(err), null);
@@ -316,8 +316,8 @@ const addRation = (ration, res) => {
                 let insertId = data.insertId;
                 for (let i = 0; i < ration.foods.length; i++) {
                     db.query(`INSERT INTO ration_foods SET
-                    id_food = ?, amount = ?, id_ration = ?`,
-                    [ration.foods[i].id_food, ration.foods[i].amount, insertId], (err) => {
+                    id_food = ?, id_dish = ?, amount = ?, id_ration = ?`,
+                    [ration.foods[i].id_food, ration.foods[i].id_dish, ration.foods[i].amount, insertId], (err) => {
                         if (err) {
                             return db.rollback(() => {
                                 res(textError(err), null);
@@ -360,8 +360,8 @@ const addRationToMeal = (ration, res) => {
         }
         for (let i = 0; i < ration.foods.length; i++) {
             db.query(`INSERT INTO meal_foods SET
-            id_food = ?, amount = ?, id_meal = ?`,
-            [ration.foods[i].id_food, ration.foods[i].amount, ration.idMeal], (err) => {
+            id_food = ?, id_dish = ?, amount = ?, id_meal = ?`,
+            [ration.foods[i].id_food, ration.foods[i].id_dish, ration.foods[i].amount, ration.idMeal], (err) => {
                 if (err) {
                     return db.rollback(() => {
                         res(textError(err), null);
@@ -413,7 +413,9 @@ const getUsersRations = (id, res) => {
 }
 
 const getRationFoods = (id, res) => {
-    db.query(`SELECT * FROM ration_foods WHERE id_ration = ?`, [id], (err, data) => {
+    db.query(`SELECT rf.id, rf.id_food, rf.id_dish, rf.amount,
+    f.name, d.name AS name_dish, f.id_food_category, f.proteins, f.fats, f.carbohydrates, f.calories,
+    f.fibers, f.glycemic_index, f.author FROM ration_foods AS rf LEFT JOIN foods AS f ON rf.id_food = f.id LEFT JOIN dishes AS d ON rf.id_dish = d.id WHERE id_ration = ?`, [id], (err, data) => {
         if (err) {
             res(textError(err), null);
         } else {
@@ -455,6 +457,206 @@ const deleteRation = (id, res) => {
     })
 }
 
+const addDish = (dish, res) => {
+    db.query(`INSERT INTO dishes SET
+    name = ?, id_user = ?`,
+    [dish.name, dish.idUser], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const addDishFood = (food, res) => {
+    db.query(`INSERT INTO dish_foods SET
+    id_food = ?, amount = ?, id_dish = ?`,
+    [food.idFood, food.amount, food.idDish], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const deleteDish = (id, res) => {
+    db.beginTransaction((err) => {
+        if (err) {
+            res(textError(err), null);
+        }
+        db.query(`DELETE FROM meal_foods WHERE id_dish = ?`,
+        [id], (err, data) => {
+            if (err) {
+                return db.rollback(() => {
+                    res(textError(err), null);
+                });
+            }
+            db.query(`DELETE FROM dish_foods WHERE id_dish = ?`,
+            [id], (err, data) => {
+                if (err) {
+                    return db.rollback(() => {
+                        res(textError(err), null);
+                    });
+                } else {
+                    db.query(`DELETE FROM dishes WHERE id = ?`,
+                    [id], (err) => {
+                        if (err) {
+                            return db.rollback(() => {
+                                res(textError(err), null);
+                            });
+                        }
+                        db.commit((err) => {
+                            if (err) {
+                                return db.rollback(() => {
+                                    res(textError(err), null);
+                                });
+                            }
+                            res(null, {name: "Success", text: ""});
+                        })
+                    });
+                }
+            });
+        });
+    })
+}
+
+const getDishes = (id, res) => {
+    db.query(`SELECT * FROM dishes WHERE id_user = ?`,
+    [id], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const getDishFoods = (id, res) => {
+    db.query(`SELECT df.id, df.id_food, f.name, f.id_food_category, f.proteins, f.fats, f.carbohydrates, f.calories, f.fibers, f.glycemic_index, f.author, df.amount, df.id_dish FROM dish_foods AS df INNER JOIN foods AS f ON df.id_food = f.id WHERE id_dish = ?`,
+    [id], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const updateAmountDishFood = (food, res) => {
+    db.query(`UPDATE dish_foods SET amount = ? WHERE id = ?`, [food.amount, food.id], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const deleteDishFood = (id, res) => {
+    db.query(`DELETE FROM dish_foods WHERE id = ?`, [id], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, {name: "Success", text: ""});
+        }
+    });
+}
+
+const addMealDish = (food, res) => {
+    db.query(`INSERT INTO meal_foods SET id_dish = ?, amount = ?, id_meal = ?`,
+    [food.idDish, food.amount, food.idMeal], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, {name: "Success", text: ""});
+        }
+    });
+}
+
+const getTrainMods = (program, res) => {
+    db.query(`SELECT tm.id, tm.name, tm.period FROM train_mods AS tm INNER JOIN train_conformity AS tc ON tm.id = tc.id_train_mod WHERE tc.aim = ? AND tc.train_prepare = ?`,
+    [program.aim, program.trainPrepare], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const getTrains = (program, res) => {
+    db.query(`SELECT * FROM train_examples WHERE id_mode IN (SELECT tm.id FROM train_mods AS tm INNER JOIN train_conformity AS tc ON tm.id = tc.id_train_mod WHERE tc.aim = ? AND tc.train_prepare = ?)`,
+    [program.aim, program.trainPrepare], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const addTrainProgram = (program, res) => {
+    db.beginTransaction((err) => {
+        if (err) {
+            res(textError(err), null);
+        }
+        db.query(`INSERT INTO program_train SET
+        id_program = ?, date = ?`,
+        [program.idProgram, program.date], (err, data) => {
+            if (err) {
+                return db.rollback(() => {
+                    res(textError(err), null);
+                });
+            }
+            db.query(`INSERT INTO program_train_examples SET
+            id_program_train = ?, id_train_example = ?`,
+            [data.insertId, program.idTrainExample], (err) => {
+                if (err) {
+                    return db.rollback(() => {
+                        res(textError(err), null);
+                    });
+                }
+                db.commit((err) => {
+                    if (err) {
+                        return db.rollback(() => {
+                            res(textError(err), null);
+                        });
+                    }
+                    res(null, {name: "Success", text: ""});
+                })
+            });
+        });
+    })
+}
+
+const getTrainProgram = (program, res) => {
+    db.query(`SELECT pte.id, te.name, te.description, te.count_examples, pt.id_program FROM program_train_examples AS pte
+    INNER JOIN train_examples AS te ON pte.id_train_example = te.id
+    INNER JOIN program_train AS pt ON pte.id_program_train = pt.id
+    WHERE pt.id_program = ? AND date = ?`,
+    [program.id, program.date], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const deleteTrainProgram = (program, res) => {
+    db.query(`DELETE pt FROM program_train_examples AS pte
+        INNER JOIN program_train AS pt ON pte.id_program_train = pt.id
+        WHERE pt.id_program = ? AND pt.date = ?`,
+        [program.idProgram, program.date], (err, data) => {
+            if (err) {
+                res(textError(err), null);
+            }
+            res(null, {name: "Success", text: data});
+    });
+}
+
 module.exports.getLifestyles = getLifestyles;
 module.exports.getWeightCategories = getWeightCategories;
 module.exports.addProgram = addProgram;
@@ -484,3 +686,16 @@ module.exports.deleteRationFood = deleteRationFood;
 module.exports.getUsersRations = getUsersRations;
 module.exports.getRationFoods = getRationFoods;
 module.exports.deleteRation = deleteRation;
+module.exports.addDish = addDish;
+module.exports.addDishFood = addDishFood;
+module.exports.deleteDish = deleteDish;
+module.exports.getDishes = getDishes;
+module.exports.getDishFoods = getDishFoods;
+module.exports.updateAmountDishFood = updateAmountDishFood;
+module.exports.deleteDishFood = deleteDishFood;
+module.exports.addMealDish = addMealDish;
+module.exports.getTrainMods = getTrainMods;
+module.exports.getTrains = getTrains;
+module.exports.addTrainProgram = addTrainProgram;
+module.exports.getTrainProgram = getTrainProgram;
+module.exports.deleteTrainProgram = deleteTrainProgram;

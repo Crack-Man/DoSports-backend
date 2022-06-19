@@ -10,7 +10,17 @@ const textError = (err) => {
 }
 
 const getUsers = (res) => {
-    db.query('SELECT users.id, users.login, users.password, users.email, users.fullname, users.birthday, users.gender, users.id_region, users.id_vk, users.pro, users.pro_last_datetime, users.admin, users.date_reg, regions.name AS region_name FROM users INNER JOIN regions ON users.id_region = regions.id', (err, data) => {
+    db.query('SELECT users.id, users.login, users.password, users.email, users.fullname, users.birthday, users.gender, users.id_region, users.id_vk, users.pro_last_datetime, users.admin, users.date_reg, regions.name AS region_name FROM users INNER JOIN regions ON users.id_region = regions.id', (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
+const getUserByEmail = (email, res) => {
+    db.query('SELECT * FROM users WHERE email = ?', [email], (err, data) => {
         if (err) {
             res(textError(err), null);
         } else {
@@ -153,7 +163,7 @@ const findUser = (user, res) => {
 }
 
 const getUser = (id, res) => {
-    db.query(`SELECT users.id, users.login, users.password, users.email, users.fullname, users.birthday, users.gender, users.id_region, users.id_vk, users.pro, users.pro_last_datetime, users.admin, users.date_reg, regions.name AS region_name FROM users INNER JOIN regions ON users.id_region = regions.id WHERE users.id = ?`, [id], (err, data) => {
+    db.query(`SELECT users.id, users.login, users.password, users.email, users.fullname, users.birthday, users.gender, users.id_region, users.id_vk, users.pro_last_datetime, users.admin, users.date_reg, regions.name AS region_name FROM users INNER JOIN regions ON users.id_region = regions.id WHERE users.id = ?`, [id], (err, data) => {
         if (err) {
             res(textError(err), null);
         } else {
@@ -263,6 +273,7 @@ const updateProfilePassword = (user, res) => {
 }
 
 module.exports.getUsers = getUsers;
+module.exports.getUserByEmail = getUserByEmail;
 module.exports.getLogins = getLogins;
 module.exports.getEmails = getEmails;
 module.exports.countLogin = countLogin;

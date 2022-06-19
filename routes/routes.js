@@ -3,7 +3,8 @@ const path = require("../config/path").path.frontend;
 const api = {
     users: require("./users/index.js"),
     vkAuth: require("./vk-auth/index.js"),
-    programs: require("./programs/index.js")
+    programs: require("./programs/index.js"),
+    payment: require("./payment/index.js")
 }
 const controllers = {
     users: require("../controllers/controller-users.js"),
@@ -25,6 +26,9 @@ router.get("/api/regions/get-regions", controllers.regions.showRegions);
 
 // Программы
 router.use("/api/programs", api.programs);
+
+// Система оплаты
+router.use("/api/payment", api.payment);
 
 // За все остальные ссылки отвечает Vue
 router.get('*', (req, res) => {

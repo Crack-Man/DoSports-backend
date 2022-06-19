@@ -317,6 +317,149 @@ const removeRation = (req, res) => {
     })
 }
 
+const createDish = (req, res) => {
+    let dish = req.body;
+    models.programs.addDish(dish, (err, results) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json({name: "Success", text: "", id: results.insertId});
+        }
+    })
+}
+
+const removeDish = (req, res) => {
+    let id = req.body.id;
+    models.programs.deleteDish(id, (err, results) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json({name: "Success", text: ""});
+        }
+    })
+}
+
+const createDishFood = (req, res) => {
+    let food = req.body;
+    models.programs.addDishFood(food, (err, results) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json({name: "Success", text: ""});
+        }
+    })
+}
+
+const showDishes = (req, res) => {
+    let id = req.params.id;
+    models.programs.getDishes(id, (err, results) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json({name: "Success", text: "", dishes: results});
+        }
+    })
+}
+
+const showDishFoods = (req, res) => {
+    let id = req.params.id;
+    models.programs.getDishFoods(id, (err, results) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json({name: "Success", text: "", foods: results});
+        }
+    })
+}
+
+const changeAmountDishFood = (req, res) => {
+    let food = req.body;
+    models.programs.updateAmountDishFood(food, (err, results) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json({name: "Success", text: ""});
+        }
+    })
+}
+
+const removeDishFood = (req, res) => {
+    let id = req.body.id;
+    models.programs.deleteDishFood(id, (err, results) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json(results);
+        }
+    })
+}
+
+const createMealDish = (req, res) => {
+    let dish = req.body;
+    models.programs.addMealDish(dish, (err, results) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json(results);
+        }
+    })
+}
+
+const showTrainMods = (req, res) => {
+    let program = req.body;
+    models.programs.getTrainMods(program, (err, results) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json({name: "Success", text: "", mods: results});
+        }
+    })
+}
+
+const showTrains = (req, res) => {
+    let program = req.body;
+    models.programs.getTrains(program, (err, results) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json({name: "Success", text: "", trains: results});
+        }
+    })
+}
+
+const createTrainProgram = (req, res) => {
+    let program = req.body;
+    models.programs.addTrainProgram(program, (err, results) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json(results);
+        }
+    })
+}
+
+const showTrainProgram = (req, res) => {
+    let program = req.body;
+    models.programs.getTrainProgram(program, (err, results) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json({name: "Success", text: "", trains: results});
+        }
+    })
+}
+
+const removeTrainProgram = (req, res) => {
+    let program = req.body;
+    models.programs.deleteTrainProgram(program, (err, results) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json(results);
+        }
+    })
+}
+
 module.exports.showLifestyles = showLifestyles;
 module.exports.showWeightCategories = showWeightCategories;
 module.exports.createProgram = createProgram;
@@ -346,3 +489,16 @@ module.exports.removeRationFood = removeRationFood;
 module.exports.showUsersRations = showUsersRations;
 module.exports.showRationFoods = showRationFoods;
 module.exports.removeRation = removeRation;
+module.exports.createDish = createDish;
+module.exports.createDishFood = createDishFood;
+module.exports.removeDish = removeDish;
+module.exports.showDishes = showDishes;
+module.exports.showDishFoods = showDishFoods;
+module.exports.changeAmountDishFood = changeAmountDishFood;
+module.exports.removeDishFood = removeDishFood;
+module.exports.createMealDish = createMealDish;
+module.exports.showTrainMods = showTrainMods;
+module.exports.showTrains = showTrains;
+module.exports.createTrainProgram = createTrainProgram;
+module.exports.showTrainProgram = showTrainProgram;
+module.exports.removeTrainProgram = removeTrainProgram;
