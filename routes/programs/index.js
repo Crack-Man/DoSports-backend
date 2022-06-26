@@ -55,4 +55,8 @@ router.post("/add-train-program", controllers.programs.createTrainProgram);
 router.post("/get-train-program", controllers.programs.showTrainProgram);
 router.post("/delete-train-program", controllers.programs.removeTrainProgram);
 
+router.post("/add-diary", controllers.programs.pushParamsToDiary);
+router.post("/get-diary-by-date", controllers.programs.showDiaryByDate);
+router.post("/get-user-diary", controllers.programs.showUserDiary);
+
 module.exports = router;

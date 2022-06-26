@@ -33,16 +33,9 @@ import axios from 'axios'
 Axios взаимодействует с базой данных через асинхронные запросы. Так, получить данные можно следующим способом:
 
 ```js
-axios.get("https://dosports.ru/api/users/login-is-unique/Crack_Man").then((data) => {
-    console.log(data); // true или false 
+axios.get("https://dosports.ru/api/users/login-is-unique/Crack_Man").then((res) => {
+    console.log(res.data); // true или false 
 });
-```
-
-или
-
-```js
-let response = await axios.get("https://dosports.ru/api/users/login-is-unique/Crack_Man");
-console.log(response.data); // true или false
 ```
 
 ### Список команд
@@ -52,31 +45,35 @@ console.log(response.data); // true или false
 ##### 1. Получить список логинов
 
 ```js
-let response = await axios.get(`https://dosports.ru/api/users/get-logins`);
-console.log(response.data); // JSON логинов
+await axios.get(`https://dosports.ru/api/users/get-logins`).then((res) => {
+  console.log(res.data); // JSON логинов
+});
 ```
 
 ##### 2. Получить список почтовых адресов
 
 ```js
-let response = await axios.get(`https://dosports.ru/api/users/get-emails`);
-console.log(response.data); // JSON почтовых адресов
+await axios.get(`https://dosports.ru/api/users/get-emails`).then((res) => {
+  console.log(res.data); // JSON почтовых адресов
+});
 ```
 
 ##### 3. Проверить, является ли данный логин уникальным
 
 ```js
 let login = "Crack-Man";
-let response = await axios.get(`https://dosports.ru/api/users/login-is-unique/${login}`);
-console.log(response.data); // true или false
+await axios.get(`https://dosports.ru/api/users/login-is-unique/${login}`).then((res) => {
+  console.log(res.data); // true или false
+});
 ```
 
 ##### 4. Проверить, является ли данная почта уникальной
 
 ```js
 let email = "example@gmail.com"
-let response = await axios.get(`https://dosports.ru/api/users/email-is-unique/${email}`);
-console.log(response.data); // true или false
+await axios.get(`https://dosports.ru/api/users/email-is-unique/${email}`).then((res) => {
+  console.log(res.data); // true или false
+});
 ```
 
 ##### 5. Добавить пользователя
@@ -92,11 +89,12 @@ let newUser = {
     password: "1234567", // не должны встречаться знаки ', " и `, минимальное количество символов: 7
 }
 
-let response = await axios.post(`https://dosports.ru/api/users/add-user`, newUser);
-console.log(response.data);
+await axios.post(`https://dosports.ru/api/users/add-user`, newUser).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -113,10 +111,12 @@ let data = {
 newUser тот же самый, что в п. 5
 
 ```js
-let response = await axios.post("/add-user-mobile", newUser);
+await axios.post("/add-user-mobile", newUser).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -133,8 +133,9 @@ let newUser = {
     email: "example@gmail.com", // латинские символы или цифры, без пробелов
 }
 
-let response = await axios.post(`https://dosports.ru/api/users/activate/resend-code`, newUser);
-console.log(response.data);
+await axios.post(`https://dosports.ru/api/users/activate/resend-code`, newUser).then((res) => {
+  console.log(res.data);
+});
 ```
 
 Происходит то же самое, что и в предыдущем пункте, но код не генерируется заново.
@@ -143,8 +144,9 @@ console.log(response.data);
 
 ```js
 let code = "$asdl$23414zfjSxc";
-let response = await axios.get(`https://dosports.ru/api/users/activate/${code}`);
-console.log(response.data); // сообщение о том, что пользователь успешно активирован, или данный код не найден
+await axios.get(`https://dosports.ru/api/users/activate/${code}`).then((res) => {
+  console.log(res.data); // сообщение о том, что пользователь успешно активирован, или данный код не найден
+});
 ```
 
 ##### 9. Авторизация пользователя
@@ -154,11 +156,12 @@ let user = {
     login: "Crack_Man", // также на этом месте может быть email
     password: "1234567"
 }
-let response = await axios.post(`https://dosports.ru/api/users/auth`, user);
-console.log(response.data);
+await axios.post(`https://dosports.ru/api/users/auth`, user).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -177,12 +180,13 @@ let data = {
 ```js
 let tokenAccess = "saxdjkdjkl$#3.213dfasf.1234rf";
 
-let response = await axios.post(`https://dosports.ru/api/users/verify-token-access`, tokenAccess);
-console.log(response.data)
+await axios.post(`https://dosports.ru/api/users/verify-token-access`, tokenAccess).then((res) => {
+  console.log(res.data)
+});
 ''
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -199,11 +203,12 @@ let data = {
 ```js
 let tokenRefresh = "saxdjkdjkl$#3.213dfasf.1234rf";
 
-let response = await axios.post(`https://dosports.ru/api/users/verify-token-access`, tokenAccess);
-console.log(response.data)
+await axios.post(`https://dosports.ru/api/users/verify-token-access`, tokenAccess).then((res) => {
+  console.log(res.data)
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -226,11 +231,12 @@ let data = {
     email: "example@gmail.com"
 }
 
-let response = await axios.post(`https://dosports.ru/api/users/send-code`, data);
-console.log(response.data)
+await axios.post(`https://dosports.ru/api/users/send-code`, data).then((res) => {
+  console.log(res.data)
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -251,8 +257,9 @@ let data = {
     email: "example@gmail.com"
 }
 
-let response = await axios.post(`https://dosports.ru/api/users/resend-code`, data);
-console.log(response.data)
+await axios.post(`https://dosports.ru/api/users/resend-code`, data).then((res) => {
+  console.log(res.data)
+});
 ```
 
 Происходит то же самое, что и в предыдущем пункте, но код не генерируется заново.
@@ -265,11 +272,12 @@ let data = {
     code: 12345
 }
 
-let response = await axios.post(`https://dosports.ru/api/users/compare-code`, data);
-console.log(response.data)
+await axios.post(`https://dosports.ru/api/users/compare-code`, data).then((res) => {
+  console.log(res.data)
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -287,11 +295,12 @@ let data = {
     code: 12345,
 }
 
-let response = await axios.post(`https://dosports.ru/api/users/compare-code`, data);
-console.log(response.data)
+await axios.post(`https://dosports.ru/api/users/compare-code`, data).then((res) => {
+  console.log(res.data)
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -312,10 +321,12 @@ let data = {
 
 ```js
 let token = {value: "sadhjasdanffabh"};
-let response = await axios.post(`https://dosports.ru/api/vk-auth/decode-token-vk`, token);
+await axios.post(`https://dosports.ru/api/vk-auth/decode-token-vk`, token).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -337,10 +348,12 @@ let data = {
 let id_vk = 14789124;
 let user = {id: id_vk};
 
-let response = await axios.post(`https://dosports.ru/api/vk-auth/user-in-db`, user);
+await axios.post(`https://dosports.ru/api/vk-auth/user-in-db`, user).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -365,11 +378,12 @@ let newUser = {
     password: "1234567" // значение может быть пустым
 }
 
-let response = await axios.post(`https://dosports.ru/api/vk-auth/add-user`, newUser);
-console.log(response.data);
+await axios.post(`https://dosports.ru/api/vk-auth/add-user`, newUser).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -384,8 +398,9 @@ let data = {
 ##### 1. Получить список регионов
 
 ```js
-let response = await axios.get(`https://dosports.ru/api/regions/get-regions`);
-console.log(response.data) // JSON регионов
+await axios.get(`https://dosports.ru/api/regions/get-regions`).then((res) => {
+  console.log(res.data) // JSON регионов
+});
 ```
 
 #### Программы (база)
@@ -393,15 +408,17 @@ console.log(response.data) // JSON регионов
 ##### 1. Получить список образов жизни
 
 ```js
-let response = await axios.get(`https://dosports.ru/api/programs/get-lifestyles`);
-console.log(response.data) // JSON образов жизни
+await axios.get(`https://dosports.ru/api/programs/get-lifestyles`).then((res) => {
+  console.log(res.data) // JSON образов жизни
+});
 ```
 
 ##### 2. Получить список весовых категорий
 
 ```js
-let response = await axios.get(`https://dosports.ru/api/programs/get-weight-categories`);
-console.log(response.data) // JSON весовых категорий
+await axios.get(`https://dosports.ru/api/programs/get-weight-categories`).then((res) => {
+  console.log(res.data) // JSON весовых категорий
+});
 ```
 
 ##### 3. Создать программу
@@ -425,10 +442,12 @@ let newUser = {
     }
 }
 
-let response = await axios.post("https://dosports.ru/api/programs/get-lifestyles", program);
+await axios.post("https://dosports.ru/api/programs/get-lifestyles", program).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -442,10 +461,12 @@ let data = {
 ```js
 let idUser = 1;
 
-let response = await axios.get(`https://dosports.ru/api/programs/user-has-active-program/${idUser}`);
+await axios.get(`https://dosports.ru/api/programs/user-has-active-program/${idUser}`).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -461,15 +482,17 @@ let program = {
     id: 1
 };
 
-let response = await axios.post(`https://dosports.ru/api/programs/deactivate-program`, program);
+await axios.post(`https://dosports.ru/api/programs/deactivate-program`, program).then((res) => {
+  console.log(res.data); // true или false 
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
     name: "Success", // или "Error"
-    text: true, // текст ошибки, если name === "Error"
+    text: "", // текст ошибки, если name === "Error"
 }
 ```
 
@@ -480,10 +503,12 @@ let program = {
     id: 1
 };
 
-let response = await axios.post(`https://dosports.ru/api/programs/get-program`, program);
+await axios.post(`https://dosports.ru/api/programs/get-program`, program).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -498,15 +523,17 @@ let data = {
 ##### 1. Получить список продуктов
 
 ```js
-let response = await axios.get(`https://dosports.ru/api/programs/get-foods`);
-console.log(response.data) // JSON продуктов
+await axios.get(`https://dosports.ru/api/programs/get-foods`).then((res) => {
+  console.log(res.data) // JSON продуктов
+});
 ```
 
 ##### 2. Получить список категорий продуктов
 
 ```js
-let response = await axios.get(`https://dosports.ru/api/programs/get-food-categories`);
-console.log(response.data) // JSON категорий продуктов
+await axios.get(`https://dosports.ru/api/programs/get-food-categories`).then((res) => {
+  console.log(res.data) // JSON категорий продуктов
+});
 ```
 
 ##### 3. Добавить приемы пищи на текущий день
@@ -535,10 +562,12 @@ this.program = {
     ]
 };
 
-let response = await axios.post(`https://dosports.ru/api/programs/add-program-diet`, program);
+await axios.post(`https://dosports.ru/api/programs/add-program-diet`, program).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -555,8 +584,9 @@ let program = {
     date: "25.05.2022"
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/get-program-diet`, program);
-console.log(response.data) // JSON приемов пищи и продуктов
+await axios.post(`https://dosports.ru/api/programs/get-program-diet`, program).then((res) => {
+  console.log(res.data) // JSON приемов пищи и продуктов
+});
 ```
 
 ##### 5. Удалить приемы пищи вместе с входящими в него продуктами/блюдами
@@ -566,10 +596,12 @@ let program = {
     id: 1, // поле id_program_diet, обозначающее программу диеты на текущий день
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/delete-program-diet`, program);
+await axios.post(`https://dosports.ru/api/programs/delete-program-diet`, program).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -587,10 +619,12 @@ let food = {
     idMeal: 1, // id приема пищи
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/add-meal-food`, food);
+await axios.post(`https://dosports.ru/api/programs/add-meal-food`, food).then((res) => {
+  console.log(res.data); // true или false 
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -604,8 +638,9 @@ let data = {
 ```js
 let id = 1;
 
-let response = await axios.get(`https://dosports.ru/api/programs/get-meal-foods/${id}`);
-console.log(response.data) // JSON продуктов/блюд
+await axios.get(`https://dosports.ru/api/programs/get-meal-foods/${id}`).then((res) => {
+  console.log(res.data) // JSON продуктов/блюд
+});
 ```
 
 ##### 8. Удалить продукт/блюдо из приема пищи
@@ -615,10 +650,12 @@ let food = {
     id: 1
 };
 
-let response = await axios.post(`https://dosports.ru/api/programs/delete-meal-food`, food);
+await axios.post(`https://dosports.ru/api/programs/delete-meal-food`, food).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -632,8 +669,9 @@ let data = {
 ```js
 let id = 1;
 
-let response = await axios.get(`https://dosports.ru/api/programs/get-food-by-id/${id}`);
-console.log(response.data) // JSON продукта
+await axios.get(`https://dosports.ru/api/programs/get-food-by-id/${id}`).then((res) => {
+  console.log(res.data) // JSON продукта
+});
 ```
 
 ##### 10. Обновить граммовку продукта/блюда
@@ -644,10 +682,12 @@ let food = {
     amount: 200,
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/update-amount-food`, food);
+await axios.post(`https://dosports.ru/api/programs/update-amount-food`, food).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -663,10 +703,12 @@ let program = {
     id: 1, // id программы
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/get-meal-data-by-program-id`, program);
+await axios.post(`https://dosports.ru/api/programs/get-meal-data-by-program-id`, program).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -693,10 +735,12 @@ let food = {
     idAuthor: 1
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/add-personal-food`, food);
+await axios.post(`https://dosports.ru/api/programs/add-personal-food`, food).then((res) => {
+  console.log(res.data); 
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -710,8 +754,9 @@ let data = {
 ```js
 let id = 1; // id пользователя
 
-let response = await axios.get(`https://dosports.ru/api/programs/get-personal-foods/${id}`);
-console.log(response.data) // JSON продуктов
+await axios.get(`https://dosports.ru/api/programs/get-personal-foods/${id}`).then((res) => {
+  console.log(res.data) // JSON продуктов
+});
 ```
 
 ##### 14. Обновить данные по собственному продукту
@@ -730,10 +775,12 @@ let food = {
     idAuthor: 1
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/update-personal-food`, food);
+await axios.post(`https://dosports.ru/api/programs/update-personal-food`, food).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -749,10 +796,12 @@ let food = {
     id: 1, // id продукта
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/delete-personal-food`, food);
+await axios.post(`https://dosports.ru/api/programs/delete-personal-food`, food).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -761,7 +810,7 @@ let data = {
 }
 ```
 
-##### 15. Создать рацион
+##### 16. Создать рацион
 
 ```js
 let ration = {
@@ -773,10 +822,12 @@ let ration = {
     }
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/add-ration`, ration);
+await axios.post(`https://dosports.ru/api/programs/add-ration`, ration).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -785,7 +836,7 @@ let data = {
 }
 ```
 
-##### 16. Добавить рациону продукт
+##### 17. Добавить рациону продукт
 
 ```js
 let food = {
@@ -794,10 +845,12 @@ let food = {
     idRation: 1,
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/add-ration-food`, food);
+await axios.post(`https://dosports.ru/api/programs/add-ration-food`, food).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -806,7 +859,7 @@ let data = {
 }
 ```
 
-##### 17. Добавить рацион в прием пищи
+##### 18. Добавить рацион в прием пищи
 
 ```js
 let ration = {
@@ -817,10 +870,12 @@ let ration = {
     }
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/add-ration-to-meal`, ration);
+await axios.post(`https://dosports.ru/api/programs/add-ration-to-meal`, ration).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -829,7 +884,7 @@ let data = {
 }
 ```
 
-##### 18. Обновить граммовку продукта из рациона
+##### 19. Обновить граммовку продукта из рациона
 
 ```js
 let food = {
@@ -837,10 +892,12 @@ let food = {
     amount: 50,
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/update-amount-ration-food`, food);
+await axios.post(`https://dosports.ru/api/programs/update-amount-ration-food`, food).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -849,17 +906,19 @@ let data = {
 }
 ```
 
-##### 19. Удалить продукт из рациона
+##### 20. Удалить продукт из рациона
 
 ```js
 let food = {
     id: 1, // id продукта из рациона
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/delete-ration-food`, food);
+await axios.post(`https://dosports.ru/api/programs/delete-ration-food`, food).then((res) => {
+  console.log(res.data); 
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -868,35 +927,39 @@ let data = {
 }
 ```
 
-##### 20. Получить список рационов пользователя
+##### 21. Получить список рационов пользователя
 
 ```js
 let id = 1; // id пользователя
 
-let response = await axios.get(`https://dosports.ru/api/programs/get-users-rations/${id}`);
-console.log(response.data) // JSON рационов
+await axios.get(`https://dosports.ru/api/programs/get-users-rations/${id}`).then((res) => {
+  console.log(res.data) // JSON рационов
+});
 ```
 
-##### 21. Получить список продуктов/блюд рациона
+##### 22. Получить список продуктов/блюд рациона
 
 ```js
 let id = 1; // id рациона
 
-let response = await axios.get(`https://dosports.ru/api/programs/get-ration-foods/${id}`);
-console.log(response.data) // JSON продуктов
+await axios.get(`https://dosports.ru/api/programs/get-ration-foods/${id}`).then((res) => {
+  console.log(res.data) // JSON продуктов
+});
 ```
 
-##### 22. Удалить рацион
+##### 23. Удалить рацион
 
 ```js
 let ration = {
     id: 1, // id продукта из рациона
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/delete-ration`, ration);
+await axios.post(`https://dosports.ru/api/programs/delete-ration`, ration).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -905,7 +968,7 @@ let data = {
 }
 ```
 
-##### 23. Добавить блюдо
+##### 24. Добавить блюдо
 
 ```js
 let dish = {
@@ -913,10 +976,12 @@ let dish = {
     name: "Оливье",
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/add-dish`, dish);
+await axios.post(`https://dosports.ru/api/programs/add-dish`, dish).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -925,7 +990,7 @@ let data = {
 }
 ```
 
-##### 24. Добавить продукт в блюдо
+##### 25. Добавить продукт в блюдо
 
 ```js
 let food = {
@@ -934,10 +999,12 @@ let food = {
     idDish: 1,
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/add-dish-food`, food);
+await axios.post(`https://dosports.ru/api/programs/add-dish-food`, food).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -946,17 +1013,19 @@ let data = {
 }
 ```
 
-##### 25. Удалить блюдо
+##### 26. Удалить блюдо
 
 ```js
 let dish = {
     id: 1
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/delete-dish`, dish);
+await axios.post(`https://dosports.ru/api/programs/delete-dish`, dish).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -965,15 +1034,17 @@ let data = {
 }
 ```
 
-##### 26. Получить список блюд пользователя
+##### 27. Получить список блюд пользователя
 
 ```js
 idUser = 1;
 
-let response = await axios.get(`https://dosports.ru/api/programs/get-users-dishes/${idUser}`);
+await axios.get(`https://dosports.ru/api/programs/get-users-dishes/${idUser}`).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -985,15 +1056,17 @@ let data = {
 }
 ```
 
-##### 27. Получить список продуктов в блюде
+##### 28. Получить список продуктов в блюде
 
 ```js
 idDish = 1;
 
-let response = await axios.get(`https://dosports.ru/api/programs/get-dish-foods/${idDish}`);
+await axios.get(`https://dosports.ru/api/programs/get-dish-foods/${idDish}`).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -1005,7 +1078,7 @@ let data = {
 }
 ```
 
-##### 28. Обновить граммовку продукта блюда
+##### 29. Обновить граммовку продукта блюда
 
 ```js
 let food = {
@@ -1013,10 +1086,12 @@ let food = {
     amount: 50,
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/update-amount-dish-food`, food);
+await axios.post(`https://dosports.ru/api/programs/update-amount-dish-food`, food).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -1025,17 +1100,19 @@ let data = {
 }
 ```
 
-##### 29. Удалить продукт из блюда
+##### 30. Удалить продукт из блюда
 
 ```js
 let food = {
     id: 1 // id продукта из блюда
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/delete-dish-food`, food);
+await axios.post(`https://dosports.ru/api/programs/delete-dish-food`, food).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -1044,7 +1121,7 @@ let data = {
 }
 ```
 
-##### 30. Добавить блюдо в прием пищи
+##### 31. Добавить блюдо в прием пищи
 
 ```js
 let dish = {
@@ -1053,10 +1130,12 @@ let dish = {
     idMeal: 1
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/add-meal-dish`, dish);
+await axios.post(`https://dosports.ru/api/programs/add-meal-dish`, dish).then((res) => {
+  console.log(res.data); 
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -1067,16 +1146,206 @@ let data = {
 
 #### Программы (тренировки)
 
+##### 1. Получить доступные тренировочные режимы
+
+```js
+let program = {
+    aim: 0, // цель программы: 0 - поддержание веса, 1 - сброс веса, 2 - набор веса
+    trainPrepare: 0, // уровень подготовленности к тренировкам: 0 - новичок, 1 - профессионал
+}
+
+await axios.post(`https://dosports.ru/api/programs/get-train-mods`, program).then((res) => {
+  console.log(res.data)
+});
+```
+
+res.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+    mods: [] // JSON тренирочоных режимов
+}
+```
+
+##### 2. Получить тренировочные программы
+
+```js
+let program = {
+    aim: 0, // цель программы: 0 - поддержание веса, 1 - сброс веса, 2 - набор веса
+    trainPrepare: 0, // уровень подготовленности к тренировкам: 0 - новичок, 1 - профессионал
+}
+
+await axios.post(`https://dosports.ru/api/programs/get-trains`, program).then((res) => {
+  console.log(res.data)
+});
+```
+
+res.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+    trains: [] // JSON тренировочных программ
+}
+```
+
+##### 3. Добавить тренировочную программу на текущий день
+
+```js
+let program = {
+    idProgram: 1,
+    date: 20.06.2022,
+    idTrainExample: 1, // id тренировочной программы
+}
+
+await axios.post(`https://dosports.ru/api/programs/add-train-program`, program).then((res) => {
+  console.log(res.data);
+});
+```
+
+res.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
+##### 4. Получить тренировочную программу на текущий день
+
+```js
+let program = {
+    id: 1, // id программы
+    date: 20.06.2022,
+}
+
+await axios.post(`https://dosports.ru/api/programs/get-train-program`, program).then((res) => {
+  console.log(res.data);
+});
+```
+
+res.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+    trains: "", // JSON тренировочной программы
+}
+```
+
+##### 5. Удалить тренировочную программу из текущего дня
+
+```js
+let program = {
+    idProgram: 1, // id программы
+    date: 20.06.2022,
+}
+
+await axios.post(`https://dosports.ru/api/programs/delete-train-program`, program).then((res) => {
+  console.log(res.data);
+});
+```
+
+res.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+}
+```
+
+#### Программы (дневник)
+
+##### 1. Получить данные дневника на текущий день
+
+```js
+let parameters = {
+  idUser: 1,
+  date: 2022-06-20 // пример: 20 июня 2022 года
+}
+
+await axios.post(`https://dosports.ru/api/programs/get-diary-by-date`, parameters).then((res) => {
+  console.log(res.data)
+});
+```
+
+res.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+    params: {} // JSON параметров: вес, обхват груди и т.д.
+}
+```
+
+##### 2. Добавить/обновить данные на текущий день
+
+```js
+let parameters = {
+  weight: 55, // вес (кг), вещественное число
+  bust: 55, // обхват груди (см), вещественное число
+  hip: 55, // обхват бедер (см), вещественное число
+  waist: 55, // обхват талии (см), вещественное число
+  bicep: 55, // обхват бицепса (см), вещественное число
+  shin: 55, // обхват голени (см), вещественное число
+  neck: 55, // обхват шеи (см), вещественное число
+}
+
+await axios.post(`https://dosports.ru/api/programs/add-diary`, parameters).then((res) => {
+  console.log(res.data)
+});
+```
+
+res.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+    params: {} // JSON параметров
+}
+```
+
+##### 3. Получить дневник на пользователя
+
+```js
+let user = {
+  id: 1, // id пользователя
+}
+
+await axios.post(`https://dosports.ru/api/programs/get-user-diary`, user).then((res) => {
+  console.log(res.data)
+});
+```
+
+res.data представляет собой JSON следующего вида:
+
+```js
+let data = {
+    name: "Success", // или "Error"
+    text: "", // текст ошибки, если name === "Error"
+    diary: [] // JSON параметров на все дни в БД
+}
+```
+
 #### Монетизация
 
 ##### 1. Получить прайслист
 
 ```js
-let response = await axios.get(`https://dosports.ru/api/programs/get-pricelist`);
-console.log(response.data) // JSON списка услуг
+await axios.get(`https://dosports.ru/api/programs/get-pricelist`).then((res) => {
+  console.log(res.data) // JSON списка услуг
+});
 ```
 
-##### 2. Получить ссылку на оплату
+##### 2. Получить ссылку на оплату (PayKeeper)
 
 ```js
 let payData = {
@@ -1087,10 +1356,12 @@ let payData = {
     }
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/get-pay-link`, payData);
+await axios.post(`https://dosports.ru/api/programs/get-pay-link`, payData).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {
@@ -1107,10 +1378,12 @@ let user = {
     id: 1
 }
 
-let response = await axios.post(`https://dosports.ru/api/programs/user-is-pro`, payData);
+await axios.post(`https://dosports.ru/api/programs/user-is-pro`, payData).then((res) => {
+  console.log(res.data);
+});
 ```
 
-response.data представляет собой JSON следующего вида:
+res.data представляет собой JSON следующего вида:
 
 ```js
 let data = {

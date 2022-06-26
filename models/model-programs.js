@@ -657,6 +657,65 @@ const deleteTrainProgram = (program, res) => {
     });
 }
 
+const getDiaryByDate = (params, res) => {
+    db.query(`SELECT * FROM anatomical_diary WHERE id_user = ? AND date = ?`,
+        [params.idUser, params.date], (err, data) => {
+            if (err) {
+                res(textError(err), null);
+            }
+            res(null, data);
+    });
+}
+
+const updateDiary = (params, res) => {
+    db.query(`UPDATE anatomical_diary SET 
+    weight = ?,
+    bust = ?,
+    bicep = ?,
+    hip = ?,
+    shin = ?,
+    waist = ?,
+    neck = ?
+    WHERE id_user = ? AND date = ?`,
+        [params.weight, params.bust, params.bicep, params.hip, params.shin,
+        params.waist, params.neck, params.idUser, params.date], (err, data) => {
+            if (err) {
+                res(textError(err), null);
+            }
+            res(null, {name: "Success", text: data});
+    });
+}
+
+const addDiary = (params, res) => {
+    db.query(`INSERT INTO anatomical_diary SET 
+    weight = ?,
+    bust = ?,
+    bicep = ?,
+    hip = ?,
+    shin = ?,
+    waist = ?,
+    neck = ?,
+    id_user = ?,
+    date = ?`,
+        [params.weight, params.bust, params.bicep, params.hip, params.shin,
+        params.waist, params.neck, params.idUser, params.date], (err, data) => {
+            if (err) {
+                res(textError(err), null);
+            }
+            res(null, {name: "Success", text: data});
+    });
+}
+
+const getUserDiary = (idUser, res) => {
+    db.query(`SELECT * FROM anatomical_diary WHERE id_user = ? ORDER BY date`,
+        [idUser], (err, data) => {
+            if (err) {
+                res(textError(err), null);
+            }
+            res(null, data);
+    });
+}
+
 module.exports.getLifestyles = getLifestyles;
 module.exports.getWeightCategories = getWeightCategories;
 module.exports.addProgram = addProgram;
@@ -699,3 +758,7 @@ module.exports.getTrains = getTrains;
 module.exports.addTrainProgram = addTrainProgram;
 module.exports.getTrainProgram = getTrainProgram;
 module.exports.deleteTrainProgram = deleteTrainProgram;
+module.exports.getDiaryByDate = getDiaryByDate;
+module.exports.updateDiary = updateDiary;
+module.exports.addDiary = addDiary;
+module.exports.getUserDiary = getUserDiary;

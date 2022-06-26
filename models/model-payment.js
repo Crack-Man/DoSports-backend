@@ -133,9 +133,21 @@ const userIsPro = (idUser, res) => {
     });
 }
 
+const test1 = (text, res) => {
+    db.query(`INSERT INTO test SET
+    text = ?`, [text], (err, data) => {
+        if (err) {
+            res(textError(err), null);
+        } else {
+            res(null, data);
+        }
+    });
+}
+
 module.exports.getPricelist = getPricelist;
 module.exports.getPayLink = getPayLink;
 module.exports.getUserDataByPayOperation = getUserDataByPayOperation;
 module.exports.addPaymentOperation = addPaymentOperation;
 module.exports.getRemainingPremium = getRemainingPremium;
 module.exports.userIsPro = userIsPro;
+module.exports.test1 = test1;

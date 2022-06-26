@@ -9,6 +9,7 @@ const router = express.Router();
 router.get("/get-pricelist", controllers.payment.showPricelist);
 router.post("/get-pay-link", controllers.payment.showPayLink);
 router.post("/add-premium", controllers.payment.setPremium);
+router.post("/add-premium-yoomoney", controllers.payment.setPremiumYooMoney);
 router.post("/get-remaining-premium", controllers.payment.showRemainingPremium);
 router.post("/user-is-pro", controllers.payment.showUserStatus);
 

@@ -460,6 +460,55 @@ const removeTrainProgram = (req, res) => {
     })
 }
 
+const pushParamsToDiary = (req, res) => {
+    let params = req.body;
+    models.programs.getDiaryByDate(params, (err, results) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            if (results.length) {
+                models.programs.updateDiary(params, (err, results) => {
+                    if (err) {
+                        res.json({name: "Error", text: err});
+                    } else {
+                        res.json(results);
+                    }
+                })
+            } else {
+                models.programs.addDiary(params, (err, results) => {
+                    if (err) {
+                        res.json({name: "Error", text: err});
+                    } else {
+                        res.json(results);
+                    }
+                })
+            }
+        }
+    })
+}
+
+const showDiaryByDate = (req, res) => {
+    let params = req.body;
+    models.programs.getDiaryByDate(params, (err, results) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json({name: "Success", params: results[0]});
+        }
+    });
+}
+
+const showUserDiary = (req, res) => {
+    let idUser = req.body.id;
+    models.programs.getUserDiary(idUser, (err, results) => {
+        if (err) {
+            res.json({name: "Error", text: err});
+        } else {
+            res.json({name: "Success", diary: results});
+        }
+    });
+}
+
 module.exports.showLifestyles = showLifestyles;
 module.exports.showWeightCategories = showWeightCategories;
 module.exports.createProgram = createProgram;
@@ -502,3 +551,6 @@ module.exports.showTrains = showTrains;
 module.exports.createTrainProgram = createTrainProgram;
 module.exports.showTrainProgram = showTrainProgram;
 module.exports.removeTrainProgram = removeTrainProgram;
+module.exports.pushParamsToDiary = pushParamsToDiary;
+module.exports.showDiaryByDate = showDiaryByDate;
+module.exports.showUserDiary = showUserDiary;

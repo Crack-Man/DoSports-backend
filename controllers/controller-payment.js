@@ -1,5 +1,9 @@
 const md5 = require('md5');
+const crypto = require('crypto');
+
 const paykeeper = require("../config/paykeeper.js");
+const yoomoney = require("../config/yoomoney.js");
+
 
 const models = {
     users: require("../models/model-users.js"),
@@ -56,6 +60,35 @@ const setPremium = (req, res) => {
     
 }
 
+const setPremiumYooMoney = (req, res) => {
+    let payData = req.body;
+    let paramsString = `${payData.notification_type}&${payData.operation_id}&${payData.amount}&${payData.currency}&${payData.datetime}&${payData.sender}&${payData.codepro}&${yoomoney.secret}&${payData.label}`;
+    let shasum = crypto.createHash('sha1').update(paramsString).digest('hex');
+    
+    if (payData.sha1_hash === shasum) {
+        let label = JSON.parse(payData.label);
+        let operation = {
+            idTransaction: payData.operation_id,
+            idUser: label.idUser,
+            sum: label.cost,
+            days: label.days
+        }
+        models.payment.addPaymentOperation(operation, (err, results) => {
+            if (err) {
+                res.json({name: "Error", text: err});
+            }
+            res.send(`200 OK`);
+        });
+    } else {
+        res.json({name: "Error", text: "Wrong POST qery"});
+    
+    
+        models.payment.test1(`${shasum} : ${payData.sha1_hash} : ${paramsString}`, (err, results) => {
+            res.send(`200 OK`);
+        })
+    }
+}
+
 const showRemainingPremium = (req, res) => {
     let idUser = req.body.id;
     models.payment.getRemainingPremium(idUser, (err, results) => {
@@ -79,5 +112,6 @@ const showUserStatus = (req, res) => {
 module.exports.showPricelist = showPricelist;
 module.exports.showPayLink = showPayLink;
 module.exports.setPremium = setPremium;
+module.exports.setPremiumYooMoney = setPremiumYooMoney;
 module.exports.showRemainingPremium = showRemainingPremium;
 module.exports.showUserStatus = showUserStatus;
